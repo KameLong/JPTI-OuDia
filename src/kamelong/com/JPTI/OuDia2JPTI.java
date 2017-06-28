@@ -19,9 +19,10 @@ public class OuDia2JPTI {
      */
     public static void main(String[] args){
         if(args.length!=2){
-            System.out.println("引数が足りません。引数：[input OuDia file] [output JPTI file]");
+            System.out.println("引数が足りません。引数：[input OuDia file] [output JPTI file] ");
             return;
         }
+
         try {
             long time=System.currentTimeMillis();
             System.out.println("start "+(System.currentTimeMillis()-time));
