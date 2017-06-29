@@ -61,7 +61,7 @@ public class Station {
     /**
      * 駅に存在する停留所リスト
      */
-    private ArrayList<Stop> stops=new ArrayList<>();
+    ArrayList<Stop> stops=new ArrayList<>();
 
     private static final String NAME="station_name";
     private static final String SUBNAME="station_subname";
@@ -96,7 +96,7 @@ public class Station {
         }
 
     }
-    private OptionalInt findOuDiaStation(){
+    OptionalInt findOuDiaStation(){
         return IntStream.range(0, stops.size())
                 .filter(i -> stops.get(i).name.equals("FromOuDia"))
                 .findFirst();

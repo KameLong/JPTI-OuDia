@@ -19,10 +19,12 @@ public class JPTIdata {
     private static final String AGENCY="agency";
     private static final String STATION="station";
     private static final String ROUTE="route";
+    private static final String CALENDAR="calendar";
 
     ArrayList<Agency> agency=new ArrayList<>();
     ArrayList<Station> stationList=new ArrayList<>();
     ArrayList<Route> routeList=new ArrayList<>();
+    ArrayList<Calendar> calendarList=new ArrayList<>();
 
     public JPTIdata(){
         Agency agency1=new Agency();
@@ -32,7 +34,6 @@ public class JPTIdata {
         agency2.fareUrl="http://kamelong.com/JPTI";
         agency.add(agency1);
         agency.add(agency2);
-
     }
     public JPTIdata(OuDiaDiaFile oudiaFile){
         routeList.add(new Route(oudiaFile,0,oudiaFile.getStationNum()-1,this));
@@ -47,44 +48,32 @@ public class JPTIdata {
         try {
             JSONObject outJSON = new JSONObject();
             outJSON.put(JPTI_VERSION,"0.1");
-            outJSON.put(AGENCY,makeAgencyData());
-            outJSON.put(STATION,makeStationData());
+            JSONArray agencyArray = new JSONArray();
+            for(int i=0;i<agency.size();i++){
+                agencyArray.put(agency.get(i).makeJSONObject());
+            }
+            outJSON.put(AGENCY,agencyArray);
+            JSONArray stationArray=new JSONArray();
+                for(Station station:stationList){
+                    stationArray.put(station.makeJSONObject());
+                }
+            outJSON.put(STATION,stationArray);
             JSONArray routeArray=new JSONArray();
             for(Route route:routeList){
                 routeArray.put(route.makeJSONObject());
             }
             outJSON.put(ROUTE,routeArray);
+            JSONArray calendarArray=new JSONArray();
+            for(Calendar calendar:calendarList){
+                calendarArray.put(calendar.makeJSONObject());
+            }
+            outJSON.put(CALENDAR,calendarArray);
             outFile.write(outJSON.toString());
             outFile.close();
         }catch(Exception e){
             e.printStackTrace();
         }
     }
-    private JSONArray makeAgencyData(){
-        try {
-            JSONArray result = new JSONArray();
-            for(int i=0;i<agency.size();i++){
-                result.put(agency.get(i).makeJSONObject());
-            }
-            return result;
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return new JSONArray();
-    }
-    private JSONArray makeStationData(){
-        JSONArray array=new JSONArray();
-        try{
-            for(Station station:stationList){
-                array.put(station.makeJSONObject());
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return array;
-    }
-
     private OptionalInt searchStation(String stationName){
         return IntStream.range(0, stationList.size())
                 .filter(i -> stationList.get(i).name.equals(stationName))

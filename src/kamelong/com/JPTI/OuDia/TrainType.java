@@ -24,6 +24,8 @@ AOdia is free software: you can redistribute it and/or modify
  *
  */
 
+import java.awt.*;
+
 /**
  * @author  kamelong
  * 列車種別を格納するクラス。
@@ -41,11 +43,11 @@ public class TrainType {
     /**
      * 時刻表文字色
      */
-    //private int textColor=Color.BLACK;
+    private Color textColor=Color.BLACK;
     /**
      * ダイヤグラム線色
      */
-    //private int diaColor=Color.BLACK;
+    private Color diaColor=Color.BLACK;
     /**
      * ダイヤグラムを太線で描画するか
      */
@@ -127,28 +129,30 @@ public class TrainType {
      * 時刻表文字色を取得する
      * @return 色を表すint
      */
-    public int getTextColor(){
-        return 0;
+    public Color getTextColor(){
+        return textColor;
     }
     /**
      * ダイヤグラム線色を取得する
      * @return 色を表すint
      */
-    public int getDiaColor(){
-        return 0;
+    public Color getDiaColor(){
+        return diaColor;
     }
 
     /**
      * 時刻表文字色をセットする
      * @param color 色を表すint
      */
-    public void setTextColor(int color){
+    public void setTextColor(Color color){
+        textColor=color;
     }
     /**
      * ダイヤグラム線色をセットする
      * @param color 色を表すint
      */
-    public void setDiaColor(int color){
+    public void setDiaColor(Color color){
+        diaColor=color;
     }
 
 

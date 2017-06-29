@@ -2,6 +2,8 @@ package kamelong.com.JPTI.JPTI;
 
 import kamelong.com.JPTI.OuDia.DiaFile;
 import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
+import kamelong.com.JPTI.OuDia.Train;
+import kamelong.com.JPTI.OuDia.TrainType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -66,6 +68,9 @@ public class Route {
      */
     private Color textColor=null;
     private ArrayList<RouteStation>stationList=new ArrayList<>();
+    private ArrayList<Class> classList=new ArrayList<>();
+    private ArrayList<Trip> tripList=new ArrayList<>();
+
 
     private static final String AGENCY_ID="agency_id";
     private static final String NO="route_no";
@@ -77,6 +82,8 @@ public class Route {
     private static final String COLOR="route_color";
     private static final String TEXT_COLOR="route_text_color";
     private static final String STATION="route_station";
+    private static final String CLASS="class";
+    private static final String TRIP="trip";
 
     /**
      * OuDiaファイルの路線の一部分から生成する。
@@ -101,6 +108,52 @@ public class Route {
         for(int i=startStation;i<endStaton+1;i++){
             RouteStation station=new RouteStation(oudia.getStation(i),jpti.stationList);
             stationList.add(station);
+        }
+        for(int i=0;i<oudia.getTypeNum();i++){
+            classList.add(new Class(oudia.getTrainType(i)));
+        }
+        for(int diaNum=0;diaNum<oudia.getDiaNum();diaNum++) {
+            String diaName=oudia.getDiaName(diaNum);
+            int calendarID;
+            OptionalInt calendar=IntStream.range(0, jpti.calendarList.size())
+                    .filter(i -> jpti.calendarList.get(i).name.equals(diaName))
+                    .findFirst();
+            if(calendar.isPresent()){
+                calendarID=calendar.getAsInt();
+            }else{
+                calendarID=jpti.calendarList.size();
+                Calendar newCalendar=new Calendar();
+                newCalendar.name=diaName;
+                jpti.calendarList.add(newCalendar);
+            }
+
+
+            for (int i = 0; i < oudia.getTrainNum(0, 0); i++) {
+                int useStationNum = 0;
+                Train train = oudia.getTrain(0, 0, i);
+                for (int j = startStation; j < endStaton + 1; j++) {
+                    if (train.getStopType(j) == 1 || train.getStopType(j) == 2) {
+                        useStationNum++;
+                    }
+                }
+                if (useStationNum < 2) {
+                    continue;
+                }
+                tripList.add(new Trip(train, startStation, endStaton, calendarID * 10000 + 0 + i + 1, 0,calendarID, oudia, jpti));
+            }
+            for (int i = 0; i < oudia.getTrainNum(0, 1); i++) {
+                int useStationNum = 0;
+                Train train = oudia.getTrain(0, 1, i);
+                for (int j = startStation; j < endStaton + 1; j++) {
+                    if (train.getStopType(j) == 1 || train.getStopType(j) == 2) {
+                        useStationNum++;
+                    }
+                }
+                if (useStationNum < 2) {
+                    continue;
+                }
+                tripList.add(new Trip(train, startStation, endStaton, calendarID * 10000 + 5000 + i + 1, 1, calendarID, oudia, jpti));
+            }
         }
     }
 
@@ -135,6 +188,17 @@ public class Route {
                 stationArray.put(station.makeJSONObject());
             }
             json.put(STATION,stationArray);
+            JSONArray classArray=new JSONArray();
+            for(Class type:classList){
+                classArray.put(type.makeJSONObject());
+            }
+            json.put(CLASS,classArray);
+            JSONArray tripArray=new JSONArray();
+            for(Trip trip:tripList){
+                tripArray.put(trip.makeJSONObject());
+            }
+            json.put(TRIP,tripArray);
+
         }catch(Exception e){
             e.printStackTrace();
         }
