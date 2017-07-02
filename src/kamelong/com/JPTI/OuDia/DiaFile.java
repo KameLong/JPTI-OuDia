@@ -18,7 +18,7 @@ abstract public class DiaFile{
     /**
      *路線名。
      */
-    protected String lineName="";
+    String lineName="";
     /**
      * ダイヤ名。
      * 一ファイル内に複数のダイヤを格納することができるためArrayListを用いる
@@ -28,7 +28,7 @@ abstract public class DiaFile{
      * 駅
      * 駅の数は不定
      */
-    protected ArrayList<Station> station=new ArrayList<Station>();
+    public ArrayList<Station> station=new ArrayList<Station>();
     /**
      * 種別
      * 種別の数は不定

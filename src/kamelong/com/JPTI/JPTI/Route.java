@@ -1,9 +1,7 @@
 package kamelong.com.JPTI.JPTI;
 
-import kamelong.com.JPTI.OuDia.DiaFile;
 import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
 import kamelong.com.JPTI.OuDia.Train;
-import kamelong.com.JPTI.OuDia.TrainType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

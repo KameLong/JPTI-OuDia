@@ -1,7 +1,6 @@
 package kamelong.com.JPTI;
 
 import kamelong.com.JPTI.JPTI.JPTIdata;
-import kamelong.com.JPTI.OuDia.DiaFile;
 import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
 
 import java.io.File;

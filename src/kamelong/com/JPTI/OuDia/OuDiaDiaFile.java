@@ -1,5 +1,7 @@
 package kamelong.com.JPTI.OuDia;
 
+import kamelong.com.JPTI.JPTI.Font;
+
 import java.awt.Color;
 
 import java.io.BufferedReader;
@@ -13,6 +15,21 @@ import java.util.ArrayList;
  */
 
 public class OuDiaDiaFile extends DiaFile {
+    public int startTime=0;
+    public int zahyouKyoriDefault=0;
+    public ArrayList<Font> jikokuhyouFont =new ArrayList<>();
+    public Font jikokuVFOnt=null;
+    public Font diaEkimeiFont=null;
+    public Font diaJikokuFont=null;
+    public Font diaRessyaFont=null;
+    public Font commentFont=null;
+    public Color diaMojiColor=null;
+    public Color diaHaikeiColor=null;
+    public Color diaResyaColor=null;
+    public Color diaJikuColor=null;
+    public int stationNameLength=-1;
+    public int ressyawidth=-1;
+
     /**
      * 推奨コンストラクタ。
      * @param file 開きたいファイル @code null then サンプルファイルを開く
@@ -135,6 +152,9 @@ public class OuDiaDiaFile extends DiaFile {
                         if(line.split("=",-1)[0].equals("StopMarkDrawType")){
                             mTrainType.setShowStop(line.split("=",-1)[1]);
                         }
+                        if(line.split("=",-1)[0].equals("JikokuhyouFontIndex")){
+                            mTrainType.fontNumber=Integer.parseInt(line.split("=",-1)[1]);
+                        }
                         line=br.readLine();
                     }
                     trainType.add(mTrainType);
@@ -166,6 +186,79 @@ public class OuDiaDiaFile extends DiaFile {
                     comment=line.split("=",-1)[1];
                     comment=comment.replace("\\n","\n");
                 }
+                if(line.split("=",-1)[0].equals("KitenJikoku")){
+                    startTime=Integer.parseInt(line.split("=",-1)[1]);
+                }
+                if(line.split("=",-1)[0].equals("KitenJikoku")){
+                    startTime=Integer.parseInt(line.split("=",-1)[1]);
+                }
+                if(line.split("=",-1)[0].equals("JikokuhyouFont")){
+                    Font font=new Font();
+                    font.height=Integer.parseInt(line.split("=",-1)[2].split(";",-1)[0]);
+                    font.name=line.split("=",-1)[3].split(";",-1)[0];
+                    font.bold=line.contains("Bold");
+                    font.itaric=line.contains("Itaric");
+                    jikokuhyouFont.add(font);
+                }
+                if(line.split("=",-1)[0].equals("JikokuhyouVFont")){
+                    jikokuVFOnt=new Font();
+                    try {
+                        System.out.println(line.split("=", -1)[2]);
+                        jikokuVFOnt.height = Integer.parseInt(line.split("=", -1)[2].split(";", -1)[0]);
+                    }catch(Exception e){
+                        e.printStackTrace();}
+                    jikokuVFOnt.name=line.split("=",-1)[3].split(";",-1)[0];
+
+                    jikokuVFOnt.bold=line.contains("Bold");
+                    jikokuVFOnt.itaric=line.contains("Itaric");
+                }
+                if(line.split("=",-1)[0].equals("DiaEkimeiFont")){
+                    diaEkimeiFont=new Font();
+                    diaEkimeiFont.height=Integer.parseInt(line.split("=",-1)[2].split(";",-1)[0]);
+                    diaEkimeiFont.name=line.split("=",-1)[3].split(";",-1)[0];
+                    diaEkimeiFont.bold=line.contains("Bold");
+                    diaEkimeiFont.itaric=line.contains("Itaric");
+                }
+                if(line.split("=",-1)[0].equals("DiaJikokuFont")){
+                    diaJikokuFont=new Font();
+                    diaJikokuFont.height=Integer.parseInt(line.split("=",-1)[2].split(";",-1)[0]);
+                    diaJikokuFont.name=line.split("=",-1)[3].split(";",-1)[0];
+                    diaJikokuFont.bold=line.contains("Bold");
+                    diaJikokuFont.itaric=line.contains("Itaric");
+                }
+                if(line.split("=",-1)[0].equals("DiaRessyaFont")){
+                    diaRessyaFont=new Font();
+                    diaRessyaFont.height=Integer.parseInt(line.split("=",-1)[2].split(";",-1)[0]);
+                    diaRessyaFont.name=line.split("=",-1)[3].split(";",-1)[0];
+                    diaRessyaFont.bold=line.contains("Bold");
+                    diaRessyaFont.itaric=line.contains("Itaric");
+                }
+                if(line.split("=",-1)[0].equals("CommentFont")){
+                    commentFont=new Font();
+                    commentFont.height=Integer.parseInt(line.split("=",-1)[2].split(";",-1)[0]);
+                    commentFont.name=line.split("=",-1)[3].split(";",-1)[0];
+                    commentFont.bold=line.contains("Bold");
+                    commentFont.itaric=line.contains("Itaric");
+                }
+                if(line.split("=",-1)[0].equals("DiaMojiColor")){
+                    diaMojiColor = oudiaColor2Color(line.split("=", -1)[1]);
+                }
+                if(line.split("=",-1)[0].equals("DiaHaikeiColor")){
+                    diaHaikeiColor = oudiaColor2Color(line.split("=", -1)[1]);
+                }
+                if(line.split("=",-1)[0].equals("DiaRessyaColor")){
+                    diaResyaColor = oudiaColor2Color(line.split("=", -1)[1]);
+                }
+                if(line.split("=",-1)[0].equals("DiaJikuColor")){
+                    diaJikuColor = oudiaColor2Color(line.split("=", -1)[1]);
+                }
+                if(line.split("=",-1)[0].equals("EkimeiLength")){
+                    stationNameLength=Integer.parseInt(line.split("=", -1)[1]);
+                }
+                if(line.split("=",-1)[0].equals("JikokuhyouRessyaWidth")){
+                     ressyawidth=60*Integer.parseInt(line.split("=", -1)[1]);
+                }
+
             }
         }catch(Exception e1){
             e1.printStackTrace();
@@ -287,6 +380,16 @@ public class OuDiaDiaFile extends DiaFile {
             int green=Integer.parseInt(color.substring(4,6),16);
             int red=Integer.parseInt(color.substring(6,8),16);
             type.setDiaColor(new Color(red,green,blue));
+    }
+    /**
+     * OuDiaの色表記をColorクラスに変換する
+     */
+    private Color oudiaColor2Color(String color){
+        int blue=Integer.parseInt(color.substring(2,4),16);
+        int green=Integer.parseInt(color.substring(4,6),16);
+        int red=Integer.parseInt(color.substring(6,8),16);
+        return new Color(red,green,blue);
+
     }
 
 

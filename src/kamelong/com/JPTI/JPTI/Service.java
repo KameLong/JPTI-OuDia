@@ -1,13 +1,12 @@
 package kamelong.com.JPTI.JPTI;
 
-import com.sun.org.apache.bcel.internal.generic.FADD;
+import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * 時刻表路線を記録するクラス
@@ -36,7 +35,7 @@ public class Service {
     private static final String NAME="service_name";
     private static final String ROUTE="route_array";
     private static final String ROUTE_ID="route_id";
-    private static final String DORECTION="direction";
+    private static final String DIRECTION ="direction";
     private static final String STATION_WIDTH="station_width";
     private static final String TRAIN_WIDTH="train_width";
     private static final String START_TIME="timetable_start_time";
@@ -54,6 +53,54 @@ public class Service {
     private static final String DIA_TRAIN_FONT="font_dia_train";
     private static final String COMMENT_FONT="font_comment";
 
+    public ArrayList<Integer>loadOuDia(OuDiaDiaFile diaFile){
+        name=diaFile.getLineName();
+        stationWidth=diaFile.stationNameLength;
+        trainWidth=diaFile.ressyawidth;
+        startTime=timeInt2String(diaFile.startTime);
+        defaulyStationSpace=diaFile.zahyouKyoriDefault;
+        comment=diaFile.getComment();
+        diaTextColor=diaFile.diaMojiColor;
+        diaBackColor=diaFile.diaHaikeiColor;
+        diaTrainColor=diaFile.diaResyaColor;
+        diaAxisColor=diaFile.diaJikuColor;
+        timeTableFont=diaFile.jikokuhyouFont;
+        timeTableVFont=diaFile.jikokuVFOnt;
+        diaStationFont=diaFile.diaEkimeiFont;
+        diaTimeFont=diaFile.diaJikokuFont;
+        diaTrainFont=diaFile.diaRessyaFont;
+        commentFont=diaFile.commentFont;
+
+
+
+
+        ArrayList<Integer>borderStation=new ArrayList<>();
+        for(int i=0;i<diaFile.getStationNum();i++){
+            if(diaFile.getStation(i).border()){
+                borderStation.add(i);
+                String borderName=diaFile.getStation(i).getName();
+                OptionalInt nextBorder=IntStream.range(i+1, diaFile.getStationNum())
+                        .filter(j -> diaFile.getStation(j).getName().equals(borderName))
+                        .findFirst();
+                if(nextBorder.isPresent()){
+                    borderStation.add(nextBorder.getAsInt());
+                }
+                if(i+1<diaFile.getStationNum()){
+                    String borderName2=diaFile.getStation(i+1).getName();
+                    OptionalInt beforeBorder=IntStream.range(0, i)
+                            .filter(j -> diaFile.getStation(j).getName().equals(borderName2))
+                            .findFirst();
+                    if(beforeBorder.isPresent()){
+                        borderStation.add(beforeBorder.getAsInt());
+                    }
+                }
+            }
+        }
+        borderStation.add(diaFile.getStationNum()-1);
+        Collections.sort(borderStation);
+        return borderStation;
+    }
+
     public JSONObject makeJSONObject(){
         JSONObject json=new JSONObject();
         try{
@@ -62,7 +109,7 @@ public class Service {
             for (Map.Entry<Integer, Integer> bar : route.entrySet()) {
                 JSONObject routeObject=new JSONObject();
                 routeObject.put(ROUTE_ID,bar.getKey());
-                routeObject.put(DORECTION,bar.getValue());
+                routeObject.put(DIRECTION,bar.getValue());
                 routeArray.put(routeObject);
             }
             json.put(ROUTE,routeArray);
@@ -120,54 +167,15 @@ public class Service {
         }
         return json;
     }
+    private String timeInt2String(int time){
+        int ss=time%60;
+        time=time/60;
+        int mm=time%60;
+        time=time/60;
+        int hh=time%24;
+        return String.format("%02d",hh)+":"+String.format("%02d",mm)+":"+String.format("%02d",ss);
 
-
-}
-class Font{
-    /**
-     * フォント高さ
-     */
-    private int height=-1;
-    /**
-     * フォント名
-     */
-    private String name=null;
-    /**
-     * 太字なら１
-     */
-    private boolean bold=false;
-    /**
-     * 斜体なら１
-     */
-    private boolean itaric=false;
-
-    private static final String HEIGHT="height";
-    private static final String NAME="facename";
-    private static final String BOLD="bold";
-    private static final String ITARIC="itaric";
-
-    public JSONObject makeJSONObject(){
-        JSONObject json=new JSONObject();
-        try{
-            if(height>-1){
-                json.put(HEIGHT,height);
-            }
-            if(name!=null){
-                json.put(NAME,name);
-            }
-            if(bold){
-                json.put(BOLD,1);
-            }
-            if(itaric){
-                json.put(ITARIC,1);
-            }
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return json;
     }
-
 
 
 }

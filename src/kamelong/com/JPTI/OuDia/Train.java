@@ -1,7 +1,5 @@
 package kamelong.com.JPTI.OuDia;
 
-import org.json.JSONArray;
-import java.util.ArrayList;
 /*
  *     This file is part of AOdia.
 

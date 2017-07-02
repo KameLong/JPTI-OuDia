@@ -1,7 +1,5 @@
 package kamelong.com.JPTI.JPTI;
 
-import kamelong.com.JPTI.OuDia.*;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -56,7 +54,7 @@ public class RouteStation {
      * @param oudiaStation この駅を作るための情報を含んだOuDiaの駅
      * @param JPTIStationList この駅のstationIDを指定したい駅リスト。この駅と同名の駅が含まれている必要がある。
      */
-    public RouteStation(kamelong.com.JPTI.OuDia.Station oudiaStation,ArrayList<Station> JPTIStationList){
+    public RouteStation(kamelong.com.JPTI.OuDia.Station oudiaStation, ArrayList<Station> JPTIStationList){
         //stationIDを指定。JPTIStationList内に同駅名の駅があればそれを使用。
         //もしなければ、新しく駅を作り、JPTIStationListに追加し、そのインデックスを登録
         OptionalInt id=findStationID(JPTIStationList,oudiaStation.getName());

@@ -66,6 +66,7 @@ public class TrainType {
      * ダイヤグラム上で、停車駅を表示するかどうか
      */
     private boolean showStop=false;
+    public int fontNumber=0;
 
     /**
      * コンストラクタ。

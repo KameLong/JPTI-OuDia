@@ -1,7 +1,5 @@
 package kamelong.com.JPTI.JPTI;
 
-import kamelong.com.JPTI.JPTI.Agency;
-import kamelong.com.JPTI.OuDia.DiaFile;
 import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,11 +18,13 @@ public class JPTIdata {
     private static final String STATION="station";
     private static final String ROUTE="route";
     private static final String CALENDAR="calendar";
+    private static final String SERVICE="service";
 
     ArrayList<Agency> agency=new ArrayList<>();
     ArrayList<Station> stationList=new ArrayList<>();
     ArrayList<Route> routeList=new ArrayList<>();
     ArrayList<Calendar> calendarList=new ArrayList<>();
+    ArrayList<Service>serviceList=new ArrayList<>();
 
     public JPTIdata(){
         Agency agency1=new Agency();
@@ -36,7 +36,21 @@ public class JPTIdata {
         agency.add(agency2);
     }
     public JPTIdata(OuDiaDiaFile oudiaFile){
-        routeList.add(new Route(oudiaFile,0,oudiaFile.getStationNum()-1,this));
+        Service service=new Service();
+        serviceList.add(service);
+        ArrayList<Integer>borderList=service.loadOuDia(oudiaFile);
+        int startStation=0;
+        for(int border:borderList){
+            if(border-startStation>0){
+                service.route.put(routeList.size(),0);
+                routeList.add(new Route(oudiaFile,startStation,border,this));
+                startStation=border;
+                if(oudiaFile.getStation(border).border()){
+                    startStation++;
+                }
+
+            }
+        }
     }
 
 
@@ -47,7 +61,7 @@ public class JPTIdata {
     public void makeJSONdata(FileWriter outFile){
         try {
             JSONObject outJSON = new JSONObject();
-            outJSON.put(JPTI_VERSION,"0.1");
+            outJSON.put(JPTI_VERSION,"0.2");
             JSONArray agencyArray = new JSONArray();
             for(int i=0;i<agency.size();i++){
                 agencyArray.put(agency.get(i).makeJSONObject());
@@ -68,6 +82,11 @@ public class JPTIdata {
                 calendarArray.put(calendar.makeJSONObject());
             }
             outJSON.put(CALENDAR,calendarArray);
+            JSONArray serviceArray=new JSONArray();
+            for(Service service:serviceList){
+                serviceArray.put(service.makeJSONObject());
+            }
+            outJSON.put(SERVICE,serviceArray);
             outFile.write(outJSON.toString());
             outFile.close();
         }catch(Exception e){

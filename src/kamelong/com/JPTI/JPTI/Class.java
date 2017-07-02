@@ -1,7 +1,6 @@
 package kamelong.com.JPTI.JPTI;
 
 import kamelong.com.JPTI.OuDia.TrainType;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -43,6 +42,10 @@ public class Class {
      * 種別ダイヤ停車駅明示
      */
     private boolean showStop=false;
+    /**
+     * 種別フォント
+     */
+    private int font=-1;
 
     private static final String NAME="class_name";
     private static final String SHORT_NAME="class_short_name";
@@ -51,6 +54,7 @@ public class Class {
     private static final String STYLE="class_dia_style";
     private static final String BOLD="class_dia_bold";
     private static final String SHOWSTOP="class_dia_showstop";
+    private static final String FONT="class_font";
 
     public Class(TrainType trainType){
         name=trainType.getName();
@@ -61,6 +65,7 @@ public class Class {
         diaStyle=trainType.getLineStyle();
         diaBold=trainType.getLineBold();
         showStop=trainType.getShowStop();
+        font=trainType.fontNumber;
     }
     public JSONObject makeJSONObject(){
         JSONObject json=new JSONObject();
@@ -85,6 +90,9 @@ public class Class {
                 json.put(SHOWSTOP,1);
             }else{
                 json.put(SHOWSTOP,0);
+            }
+            if(font>-1){
+                json.put(FONT,font);
             }
 
         }catch(Exception e){
