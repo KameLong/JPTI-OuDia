@@ -1,5 +1,6 @@
 package kamelong.com.JPTI.JPTI;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -42,6 +43,20 @@ class Stop {
     private static final String LON="stop_lon";
     private static final String ZONE_ID="zone_id";
 
+    public Stop(){
+    }
+    public Stop(JSONObject json){
+        try{
+            name=json.optString(NAME);
+            description=json.optString(DESCRIPTION);
+            lat=json.optString(LAT);
+            lon=json.optString(LON);
+            zoneID=json.optInt(ZONE_ID,-1);
+            number=json.optInt(NUMBER);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     JSONObject makeJSONObject(){
         JSONObject json=new JSONObject();
         try{

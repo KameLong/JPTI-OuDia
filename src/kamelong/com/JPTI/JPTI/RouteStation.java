@@ -95,8 +95,23 @@ public class RouteStation {
                 break;
         }
         viewStyle=String.format("%02d",viewStyleInt);
+    }
+    public RouteStation(JSONObject json){
+        try {
+            try {
+                stationID = json.getInt(STATION_ID);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            km=json.optDouble(KM);
+            numbering=json.optInt(NUMBERING);
+            bigStation=json.optInt(TYPE)==1;
+            viewStyle=json.optString(VIEWSTYLE);
+            border=json.optInt(BORDER)==1;
 
+        }catch(Exception e){
 
+        }
 
     }
     public JSONObject makeJSONObject (){

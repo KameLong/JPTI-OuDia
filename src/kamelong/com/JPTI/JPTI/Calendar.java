@@ -10,6 +10,14 @@ public class Calendar {
 
     private static final String NAME="calendar_name";
 
+    public Calendar(JSONObject json){
+        try{
+            name=json.optString(NAME,"");
+
+        }catch(Exception e){
+
+        }
+    }
     public JSONObject makeJSONObject(){
         JSONObject json=new JSONObject();
         try{

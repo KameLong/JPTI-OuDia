@@ -3,6 +3,7 @@ package kamelong.com.JPTI.JPTI;
 import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
 import kamelong.com.JPTI.OuDia.Train;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -22,7 +23,7 @@ public class Route {
     /**
      * 内部番号とか
      */
-    private int No=-1;
+    private int number =-1;
     /**
      * 路線名称
      * ※何とか支線は分けて書く
@@ -154,13 +155,65 @@ public class Route {
             }
         }
     }
+    public Route(JSONObject json){
+        try{
+            try{
+                agencyID=json.getInt(AGENCY_ID);
+            }catch (Exception e){
+                System.out.println("Routeに必須項目agency_IDが登録されていません");
+                e.printStackTrace();
+            }
+            number=json.optInt(NO);
+            name=json.optString(NAME);
+            nickName=json.optString(NICKNAME);
+            description=json.optString(DESCRIPTION);
+            type=json.optInt(TYPE);
+            url=json.optString(URL);
+            try{
+                color=Color.decode(json.getString(COLOR));
+            }catch(Exception e){
+            }
+            try{
+                textColor=Color.decode(json.getString(TEXT_COLOR));
+            }catch(Exception e){
+            }
+            try{
+                JSONArray classArray=json.getJSONArray(CLASS);
+                for(int i=0;i<classArray.length();i++){
+                    classList.add(new Class(classArray.getJSONObject(i)));
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            try{
+                JSONArray stationArray=json.getJSONArray(STATION);
+                for(int i=0;i<stationArray.length();i++){
+                    stationList.add(new RouteStation(stationArray.getJSONObject(i)));
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            try{
+                JSONArray tripArray=json.getJSONArray(TRIP);
+                for(int i=0;i<tripArray.length();i++){
+                    tripList.add(new Trip(tripArray.getJSONObject(i)));
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }catch (Exception e){
+
+        }
+    }
+
 
     public JSONObject makeJSONObject(){
         JSONObject json=new JSONObject();
         try{
             json.put(AGENCY_ID,agencyID);
-            if(No>-1){
-                json.put(NO,No);
+            if(number >-1){
+                json.put(NO, number);
             }
             json.put(NAME,name);
             if(nickName!=null){

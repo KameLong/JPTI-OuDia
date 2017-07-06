@@ -2,6 +2,7 @@ package kamelong.com.JPTI.JPTI;
 
 import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileWriter;
@@ -26,6 +27,9 @@ public class JPTIdata {
     ArrayList<Calendar> calendarList=new ArrayList<>();
     ArrayList<Service>serviceList=new ArrayList<>();
 
+    /**
+     * テストコンストラクタ
+     */
     public JPTIdata(){
         Agency agency1=new Agency();
         agency1.name="テスト１";
@@ -35,6 +39,53 @@ public class JPTIdata {
         agency.add(agency1);
         agency.add(agency2);
     }
+
+    /**
+     * JPTIのJSONオブジェクトからのコンストラクタ
+     */
+    public JPTIdata(JSONObject json){
+        try{
+            JSONArray agencyArray=json.getJSONArray(AGENCY);
+            for(int i=0;i<agencyArray.length();i++) {
+                agency.add(new Agency(agencyArray.getJSONObject(i)));
+            }
+        }catch(JSONException e){
+        }
+        try{
+            JSONArray routeArray=json.getJSONArray(ROUTE);
+            for(int i=0;i<routeArray.length();i++) {
+                routeList.add(new Route(routeArray.getJSONObject(i)));
+            }
+        }catch(JSONException e){
+        }
+        try{
+            JSONArray stationArray=json.getJSONArray(STATION);
+            for(int i=0;i<stationArray.length();i++) {
+                stationList.add(new Station(stationArray.getJSONObject(i)));
+            }
+        }catch(JSONException e){
+        }
+        try{
+            JSONArray serviceArray=json.getJSONArray(SERVICE);
+            for(int i=0;i<serviceArray.length();i++) {
+                serviceList.add(new Service(serviceArray.getJSONObject(i)));
+            }
+        }catch(JSONException e){
+        }
+        try{
+            JSONArray calendarArray=json.getJSONArray(CALENDAR);
+            for(int i=0;i<calendarArray.length();i++) {
+                calendarList.add(new Calendar(calendarArray.getJSONObject(i)));
+            }
+        }catch(JSONException e){
+        }
+
+
+    }
+    /**
+     * OuDiaから生成するコンストラクタ
+     * @param oudiaFile
+     */
     public JPTIdata(OuDiaDiaFile oudiaFile){
         Service service=new Service();
         serviceList.add(service);
@@ -52,6 +103,8 @@ public class JPTIdata {
             }
         }
     }
+
+
 
 
     /**

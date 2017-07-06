@@ -53,6 +53,9 @@ public class Service {
     private static final String DIA_TRAIN_FONT="font_dia_train";
     private static final String COMMENT_FONT="font_comment";
 
+    public Service(){
+        
+    }
     public ArrayList<Integer>loadOuDia(OuDiaDiaFile diaFile){
         name=diaFile.getLineName();
         stationWidth=diaFile.stationNameLength;
@@ -70,9 +73,6 @@ public class Service {
         diaTimeFont=diaFile.diaJikokuFont;
         diaTrainFont=diaFile.diaRessyaFont;
         commentFont=diaFile.commentFont;
-
-
-
 
         ArrayList<Integer>borderStation=new ArrayList<>();
         for(int i=0;i<diaFile.getStationNum();i++){
@@ -99,6 +99,37 @@ public class Service {
         borderStation.add(diaFile.getStationNum()-1);
         Collections.sort(borderStation);
         return borderStation;
+    }
+    public Service(JSONObject json){
+        try{
+            name=json.optString(NAME,"");
+            JSONArray routeArray=json.optJSONArray(ROUTE);
+            for(int i=0;i<routeArray.length();i++){
+                route.put(routeArray.getJSONObject(0).optInt(ROUTE_ID,0),routeArray.getJSONObject(i).optInt(DIRECTION,0));
+            }
+            stationWidth=json.optInt(STATION_WIDTH,7);
+            trainWidth=json.optInt(TRAIN_WIDTH,5);
+            startTime=json.optString(START_TIME);
+            defaulyStationSpace=json.optInt(START_TIME);
+            comment=json.optString(COMMENT);
+            diaTextColor=Color.decode(json.optString(DIA_TEXT_COLOR,"#000000"));
+            diaBackColor=Color.decode(json.optString(DIA_BACK_COLOR,"#ffffff"));
+            diaTrainColor=Color.decode(json.optString(DIA_TRAIN_COLOR,"#000000"));
+            diaAxisColor=Color.decode(json.optString(DIA_AXICS_COLOR,"#000000"));
+            JSONArray timeTableFontArray=json.optJSONArray(TIMETABLE_FONT);
+            for(int i=0;i<timeTableFontArray.length();i++){
+                timeTableFont.add(new Font(timeTableFontArray.getJSONObject(i)));
+            }
+            timeTableVFont=new Font(json.getJSONObject(TIMETABLE_VFONT));
+            diaStationFont=new Font(json.getJSONObject(DIA_STATION_FONT));
+            diaTimeFont=new Font(json.getJSONObject(DIA_TIME_FONT));
+            diaTrainFont=new Font(json.getJSONObject(DIA_TRAIN_FONT));
+            commentFont=new Font(json.getJSONObject(COMMENT_FONT));
+
+
+        }catch(Exception e){
+
+        }
     }
 
     public JSONObject makeJSONObject(){

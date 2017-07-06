@@ -3,6 +3,7 @@ package kamelong.com.JPTI.JPTI;
 import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
 import kamelong.com.JPTI.OuDia.Train;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -77,10 +78,39 @@ public class Trip {
                 }
             }
         }
+    }
+    public Trip(JSONObject json){
+        try{
+            try{
+                classID=json.getInt(CLASS);
+            }catch(JSONException e){
+                e.printStackTrace();
+            }
+            try{
+                blockID=json.getInt(BLOCK);
+            }catch(JSONException e){
+                e.printStackTrace();
+            }
+            try{
+                calenderID=json.getInt(CALENDER);
+            }catch(JSONException e){
+                e.printStackTrace();
+            }
+            number=json.optString(NUMBER);
+            name=json.optString(NAME);
+            direction=json.optInt(DIRECTION);
+            extraCalendarID=json.optInt(EXTRA_CALENDER);
+            JSONArray timeArray=json.getJSONArray(TIME);
+            for(int i=0;i<timeArray.length();i++){
+                timeList.add(new Time(timeArray.getJSONObject(i)));
+            }
 
 
 
 
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
     public JSONObject makeJSONObject(){
         JSONObject json=new JSONObject();

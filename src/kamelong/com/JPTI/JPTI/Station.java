@@ -1,7 +1,9 @@
 package kamelong.com.JPTI.JPTI;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import sun.awt.windows.WEmbeddedFrame;
 
 import java.util.ArrayList;
 import java.util.OptionalInt;
@@ -94,6 +96,28 @@ public class Station {
             stops.add(stop);
         }
 
+    }
+    public Station(JSONObject json){
+        try{
+            try {
+                name = json.getString(NAME);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            subName=json.optString(SUBNAME);
+            type=json.optInt(TYPE);
+            description=json.optString(description);
+            lat=json.optString(LAT);
+            lon=json.optString(LON);
+            url=json.optString(URL);
+            wheelcharBoarding=json.optString(WHEELCHAIR);
+            JSONArray stopArray=json.getJSONArray(STOP);
+            for(int i=0;i<stopArray.length();i++){
+                stops.add(new Stop(stopArray.getJSONObject(i)));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     OptionalInt findOuDiaStation(){
         return IntStream.range(0, stops.size())

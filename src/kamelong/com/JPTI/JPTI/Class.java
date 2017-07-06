@@ -1,6 +1,7 @@
 package kamelong.com.JPTI.JPTI;
 
 import kamelong.com.JPTI.OuDia.TrainType;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -66,6 +67,35 @@ public class Class {
         diaBold=trainType.getLineBold();
         showStop=trainType.getShowStop();
         font=trainType.fontNumber;
+    }
+    public Class(JSONObject json){
+        try{
+            try{
+                name=json.getString(NAME);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            try{
+                textColor = Color.decode(json.getString(TEXT_COLOR));
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            shortName=json.optString(SHORT_NAME);
+            try{
+                diaColor=Color.decode(json.optString(DIA_COLOR));
+            }catch(Exception e) {
+            }
+            diaStyle=json.optInt(STYLE);
+            if(json.optInt(BOLD)==1){
+                diaBold=true;
+            }
+            if(json.optInt(SHOWSTOP)==1){
+                showStop=true;
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
     public JSONObject makeJSONObject(){
         JSONObject json=new JSONObject();

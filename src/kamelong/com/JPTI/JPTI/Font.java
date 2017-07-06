@@ -2,6 +2,8 @@ package kamelong.com.JPTI.JPTI;
 
 import org.json.JSONObject;
 
+import javax.print.attribute.standard.MediaSize;
+
 public class Font{
     /**
      * フォント高さ
@@ -25,6 +27,15 @@ public class Font{
     private static final String BOLD="bold";
     private static final String ITARIC="itaric";
 
+    public Font(){
+
+    }
+    public Font(JSONObject json){
+        name=json.optString(NAME);
+        height=json.optInt(HEIGHT,-1);
+        bold=json.optInt(BOLD)==1;
+        itaric=json.optInt(ITARIC)==1;
+    }
     public JSONObject makeJSONObject(){
         JSONObject json=new JSONObject();
         try{

@@ -60,6 +60,33 @@ public class Agency {
     public static final String PHONE="agency_phone";
     public static final String FARE_URL="agency_fare_url";
 
+
+    public Agency(){
+
+    }
+
+    public Agency(JSONObject json){
+        try{
+            try {
+                name = json.getString(NAME);
+                number = json.getInt(NO);
+            }catch(Exception e){
+                System.out.println("会社情報において必要な情報が不足しています。");
+                System.out.println("agency_name,agency_noの項目が存在するか確認してください");
+            }
+            parentNo=json.optInt(PARENT_ID);
+            shortName=json.optString(SHORT_NAME);
+            type=json.optInt(TYPE);
+            url=json.optString(URL);
+            phone=json.optString(PHONE);
+            fareUrl=json.optString(FARE_URL);
+
+        }catch(Exception e){
+            e.printStackTrace();
+
+        }
+    }
+
     public JSONObject makeJSONObject(){
         JSONObject json = new JSONObject();
         try {

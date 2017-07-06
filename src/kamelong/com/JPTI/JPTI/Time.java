@@ -2,6 +2,7 @@ package kamelong.com.JPTI.JPTI;
 
 import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
 import kamelong.com.JPTI.OuDia.Train;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.stream.IntStream;
@@ -58,9 +59,28 @@ public class Time {
             String hh=String.format("%02d",depart%60);
             departureTime=hh+":"+mm+":"+ss;
         }
-
-
-
+    }
+    public Time(JSONObject json){
+        try {
+            try {
+                stationID = json.getInt(STATION_ID);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                stopID = json.getInt(STOP_ID);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            pickupType = json.optInt(PICKUP);
+            dropoffType = json.optInt(DROPOFF);
+            arrival_days = json.optInt(ARRIVAL_DAYS);
+            arrivalTime = json.optString(ARRIVAL_TIME);
+            departure_days = json.optInt(DEPARTURE_DAYS);
+            departureTime = json.optString(DEPARTURE_TIME);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
     public JSONObject makeJSONObject(){
         JSONObject json=new JSONObject();
