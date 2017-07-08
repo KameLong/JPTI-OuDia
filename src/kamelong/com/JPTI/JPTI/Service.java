@@ -54,7 +54,7 @@ public class Service {
     private static final String COMMENT_FONT="font_comment";
 
     public Service(){
-        
+
     }
     public ArrayList<Integer>loadOuDia(OuDiaDiaFile diaFile){
         name=diaFile.getLineName();

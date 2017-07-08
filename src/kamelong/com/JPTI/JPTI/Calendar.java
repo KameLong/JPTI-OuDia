@@ -9,7 +9,7 @@ public class Calendar {
     String name="";
 
     private static final String NAME="calendar_name";
-
+    public Calendar(){}
     public Calendar(JSONObject json){
         try{
             name=json.optString(NAME,"");

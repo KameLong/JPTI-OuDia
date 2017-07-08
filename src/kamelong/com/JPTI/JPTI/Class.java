@@ -76,13 +76,13 @@ public class Class {
                 e.printStackTrace();
             }
             try{
-                textColor = Color.decode(json.getString(TEXT_COLOR));
+                textColor = Color.decode(json.optString(TEXT_COLOR,"#000000"));
             }catch(Exception e){
                 e.printStackTrace();
             }
             shortName=json.optString(SHORT_NAME);
             try{
-                diaColor=Color.decode(json.optString(DIA_COLOR));
+                diaColor=Color.decode(json.optString(DIA_COLOR,"#000000"));
             }catch(Exception e) {
             }
             diaStyle=json.optInt(STYLE);
@@ -105,10 +105,10 @@ public class Class {
                 json.put(SHORT_NAME,shortName);
             }
             if(textColor!=null){
-                json.put(TEXT_COLOR,"#"+Integer.toHexString(textColor.getRGB()));
+                json.put(TEXT_COLOR,"#"+Integer.toHexString(textColor.getRGB()%0x1000000));
             }
             if(diaColor!=null){
-                json.put(DIA_COLOR,"#"+Integer.toHexString(diaColor.getRGB()));
+                json.put(DIA_COLOR,"#"+Integer.toHexString(diaColor.getRGB()%0x1000000));
             }
             json.put(STYLE,diaStyle);
             if(diaBold){
