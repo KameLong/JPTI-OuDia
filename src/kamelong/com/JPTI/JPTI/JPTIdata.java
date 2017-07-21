@@ -54,7 +54,7 @@ public class JPTIdata {
         try{
             JSONArray routeArray=json.getJSONArray(ROUTE);
             for(int i=0;i<routeArray.length();i++) {
-                routeList.add(new Route(routeArray.getJSONObject(i)));
+                routeList.add(new Route(routeArray.getJSONObject(i),this));
             }
         }catch(JSONException e){
         }
@@ -68,7 +68,7 @@ public class JPTIdata {
         try{
             JSONArray serviceArray=json.getJSONArray(SERVICE);
             for(int i=0;i<serviceArray.length();i++) {
-                serviceList.add(new Service(serviceArray.getJSONObject(i)));
+                serviceList.add(new Service(this,serviceArray.getJSONObject(i)));
             }
         }catch(JSONException e){
         }
@@ -89,7 +89,7 @@ public class JPTIdata {
     public JPTIdata(OuDiaDiaFile oudiaFile){
         Service service=new Service();
         serviceList.add(service);
-        ArrayList<Integer>borderList=service.loadOuDia(oudiaFile);
+        ArrayList<Integer>borderList=service.loadOuDia(this,oudiaFile);
         int startStation=0;
         for(int border:borderList){
             if(border-startStation>0){
@@ -151,6 +151,9 @@ public class JPTIdata {
                 .filter(i -> stationList.get(i).name.equals(stationName))
                 .findFirst();
 
+    }
+    public void makeSujiTaroData(int index){
+        serviceList.get(index).makeSujiTaroData();
     }
 
 

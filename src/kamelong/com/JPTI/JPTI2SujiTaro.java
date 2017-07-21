@@ -34,6 +34,7 @@ public class JPTI2SujiTaro {
                     .collect(Collectors.joining(System.getProperty("line.separator"))));
             JPTIdata jpti=new JPTIdata(json);
             System.out.println("load JPTI "+(System.currentTimeMillis()-time));
+            jpti.makeSujiTaroData(0);
             System.out.println("make SujiTaro "+(System.currentTimeMillis()-time));
             System.out.println("end "+(System.currentTimeMillis()-time));
         }catch(Exception e){

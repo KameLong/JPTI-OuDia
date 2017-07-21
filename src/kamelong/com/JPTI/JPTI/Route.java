@@ -66,9 +66,9 @@ public class Route {
      * 路線文字色
      */
     private Color textColor=null;
-    private ArrayList<RouteStation>stationList=new ArrayList<>();
-    private ArrayList<Class> classList=new ArrayList<>();
-    private ArrayList<Trip> tripList=new ArrayList<>();
+    ArrayList<RouteStation>stationList=new ArrayList<>();
+    ArrayList<Class> classList=new ArrayList<>();
+    ArrayList<Trip> tripList=new ArrayList<>();
 
 
     private static final String AGENCY_ID="agency_id";
@@ -155,7 +155,7 @@ public class Route {
             }
         }
     }
-    public Route(JSONObject json){
+    public Route(JSONObject json,JPTIdata jpti){
         try{
             try{
                 agencyID=json.getInt(AGENCY_ID);
@@ -196,7 +196,7 @@ public class Route {
             try{
                 JSONArray tripArray=json.getJSONArray(TRIP);
                 for(int i=0;i<tripArray.length();i++){
-                    tripList.add(new Trip(tripArray.getJSONObject(i)));
+                    tripList.add(new Trip(tripArray.getJSONObject(i),jpti));
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -255,6 +255,14 @@ public class Route {
         }
         return json;
     }
+    ArrayList<Trip> searchByBlockID(int id){
+        ArrayList<Trip> result=new ArrayList<>();
+        IntStream intStream=IntStream.range(0, tripList.size())
+                .filter(i -> tripList.get(i).blockID==id);
+        intStream.forEach(i->result.add(tripList.get(i)));
+        return result;
+    }
+
 
 
 

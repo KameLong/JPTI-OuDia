@@ -4,6 +4,8 @@ import kamelong.com.JPTI.OuDia.OuDiaDiaFile;
 import kamelong.com.JPTI.OuDia.Train;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.stream.IntStream;
 
@@ -11,7 +13,9 @@ import java.util.stream.IntStream;
  * Created by kame on 2017/06/28.
  */
 public class Time {
-    private int stationID=0;
+    private JPTIdata jpti;
+
+    int stationID=0;
     private int stopID=0;
     private int pickupType=1;
     private int dropoffType=1;
@@ -29,11 +33,12 @@ public class Time {
     private static final String DEPARTURE_DAYS="depature_days";
     private static final String DEPARTURE_TIME ="departure_time";
 
-    public Time(Train train, OuDiaDiaFile oudia,int station, JPTIdata jpti){
-        stationID=IntStream.range(0, jpti.stationList.size())
-                .filter(i -> jpti.stationList.get(i).name.equals(oudia.getStationName(station)))
+    public Time(Train train, OuDiaDiaFile oudia,int station, JPTIdata data){
+        jpti=data;
+        stationID=IntStream.range(0, data.stationList.size())
+                .filter(i -> data.stationList.get(i).name.equals(oudia.getStationName(station)))
                 .findFirst().getAsInt();
-        stopID=jpti.stationList.get(stationID).findOuDiaStation().getAsInt();
+        stopID=data.stationList.get(stationID).findOuDiaStation().getAsInt();
         if(train.getStopType(station)==1){
             pickupType=0;
             dropoffType=0;
@@ -60,7 +65,8 @@ public class Time {
             departureTime=hh+":"+mm+":"+ss;
         }
     }
-    public Time(JSONObject json){
+    public Time(JSONObject json,JPTIdata data){
+        jpti=data;
         try {
             try {
                 stationID = json.getInt(STATION_ID);
@@ -107,5 +113,61 @@ public class Time {
         return json;
 
     }
+    Element makeSujiTaroData(Document document){
+        Element timeDetail=document.createElement("時刻明細");
+        timeDetail.appendChild(createDom(document,"駅名",jpti.stationList.get(stationID).name));
+
+        if(departureTime==null||departureTime.length()==0){
+            if(arrivalTime==null||arrivalTime.length()==0){
+                timeDetail.appendChild(createDom(document,"発車時刻","00:00:00"));
+                timeDetail.appendChild(createDom(document,"停車種類","2"));
+
+            }
+            timeDetail.appendChild(createDom(document,"発車時刻",arrivalTime));
+            timeDetail.appendChild(createDom(document,"停車種類","0"));
+
+        }else{
+            timeDetail.appendChild(createDom(document,"発車時刻",departureTime));
+            timeDetail.appendChild(createDom(document,"停車種類","0"));
+
+        }
+        timeDetail.appendChild(createDom(document,"停車時間",stoppingTime()));
+        return timeDetail;
+
+    }
+    Element createDom(Document document,String tagName,String content){
+        Element result=document.createElement(tagName);
+        result.setTextContent(content);
+        return result;
+
+    }
+    String stoppingTime(){
+        if(arrivalTime==null||arrivalTime.length()==0||departureTime.length()==0){
+            return "00:00:00";
+        }
+        int arrival=timeString2Int(arrivalTime);
+        int departure=timeString2Int(departureTime);
+        if(arrival>departure){
+            departure+=24*60*60;
+        }
+        return timeInt2String(departure-arrival);
+
+    }
+    static int timeString2Int(String time){
+        int hh=Integer.parseInt(time.split(":",-1)[0]);
+        int mm=Integer.parseInt(time.split(":",-1)[1]);
+        int ss=Integer.parseInt(time.split(":",-1)[2]);
+        return hh*3600+mm*60+ss;
+    }
+    static String timeInt2String(int time){
+        int ss=time%60;
+        time=time/60;
+        int mm=time%60;
+        time=time/60;
+        int hh=time%24;
+        return String.format("%02d",hh)+":"+String.format("%02d",mm)+":"+String.format("%02d",ss);
+
+    }
+
 
 }

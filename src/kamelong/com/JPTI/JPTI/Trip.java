@@ -5,6 +5,8 @@ import kamelong.com.JPTI.OuDia.Train;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 
@@ -12,6 +14,7 @@ import java.util.ArrayList;
  * 列車を記録するクラス
  */
 public class Trip {
+    JPTIdata jpti;
     /**
      * 列車番号
      */
@@ -24,7 +27,7 @@ public class Trip {
      * 0：Route順方向
      * 1：Route逆方向
      */
-    private int direction=0;
+    int direction=0;
     /**
      * 種別id
      */
@@ -32,7 +35,7 @@ public class Trip {
     /**
      * 系統id
      */
-    private int blockID=0;
+    int blockID=0;
     /**
      * 運行する日id
      */
@@ -42,7 +45,7 @@ public class Trip {
      */
     private int extraCalendarID=-1;
 
-    private ArrayList<Time> timeList=new ArrayList<>();
+    ArrayList<Time> timeList=new ArrayList<>();
 
 
     private static final String NAME="trip_name";
@@ -54,7 +57,8 @@ public class Trip {
     private static final String EXTRA_CALENDER="extra_calendar";
     private static final String TIME="time";
 
-    public Trip(Train train,int startStation,int endStation,int block,int direct,int calender,OuDiaDiaFile oudia,JPTIdata jpti){
+    public Trip(Train train,int startStation,int endStation,int block,int direct,int calender,OuDiaDiaFile oudia,JPTIdata jptiData){
+        jpti=jptiData;
         if(train.getName().length()>0){
             name=train.getName();
         }
@@ -64,22 +68,24 @@ public class Trip {
         direction=direct;
         blockID=block;
         calenderID=calender;
+        classID=train.getType();
 
         if(direct==0){
             for(int i=startStation;i<endStation+1;i++){
                 if(train.getStopType(i)==1||train.getStopType(i)==2){
-                    timeList.add(new Time(train,oudia,i,jpti));
+                    timeList.add(new Time(train,oudia,i,jptiData));
                 }
             }
         }else{
             for(int i=endStation;i>startStation-1;i--){
                 if(train.getStopType(i)==1||train.getStopType(i)==2){
-                    timeList.add(new Time(train,oudia,i,jpti));
+                    timeList.add(new Time(train,oudia,i,jptiData));
                 }
             }
         }
     }
-    public Trip(JSONObject json){
+    public Trip(JSONObject json,JPTIdata jptiData){
+        jpti=jptiData;
         try{
             try{
                 classID=json.getInt(CLASS);
@@ -102,7 +108,7 @@ public class Trip {
             extraCalendarID=json.optInt(EXTRA_CALENDER);
             JSONArray timeArray=json.getJSONArray(TIME);
             for(int i=0;i<timeArray.length();i++){
-                timeList.add(new Time(timeArray.getJSONObject(i)));
+                timeList.add(new Time(timeArray.getJSONObject(i),jpti));
             }
 
 
@@ -140,7 +146,35 @@ public class Trip {
         }
         return json;
     }
+    Element makeSujiTaroData(Document document){
+        Element train=document.createElement("列車明細");
+        train.appendChild(createDom(document,"列車番号",number));
+        train.appendChild(createDom(document,"列車名",name));
+        train.appendChild(createDom(document,"列車号番号","0"));
+        train.appendChild(createDom(document,"列車種別",classID+""));
+        train.appendChild(createDom(document,"動力種別","1"));
+        train.appendChild(createDom(document,"輸送種別","0"));
+        train.appendChild(createDom(document,"運転日","0"));
+        train.appendChild(createDom(document,"他線へ直通_起点側","False"));
+        train.appendChild(createDom(document,"他線へ直通_起点側_反転","False"));
+        train.appendChild(createDom(document,"他線へ直通_終点側","False"));
+        train.appendChild(createDom(document,"他線へ直通_起点側_反転","False"));
+        train.appendChild(createDom(document,"他線へ直通_中間部","False"));
 
+
+        return train;
+    }
+
+    Element createDom(Document document,String tagName,String content){
+        Element result=document.createElement(tagName);
+        if(content==null){
+            result.setTextContent("");
+        }else {
+            result.setTextContent(content);
+        }
+        return result;
+
+    }
 
 
 }

@@ -3,6 +3,8 @@ package kamelong.com.JPTI.JPTI;
 import kamelong.com.JPTI.OuDia.TrainType;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.awt.*;
 
@@ -13,7 +15,7 @@ public class Class {
     /**
      * 種別名
      */
-    private String name="";
+    String name="";
     /**
      * 種別略称
      */
@@ -76,13 +78,23 @@ public class Class {
                 e.printStackTrace();
             }
             try{
-                textColor = Color.decode(json.optString(TEXT_COLOR,"#000000"));
+                String color=json.optString(TEXT_COLOR,"#000000");
+                if(color.length()==9){
+                    color="#"+color.substring(3);
+                }
+
+                textColor = Color.decode(color);
             }catch(Exception e){
                 e.printStackTrace();
             }
             shortName=json.optString(SHORT_NAME);
             try{
-                diaColor=Color.decode(json.optString(DIA_COLOR,"#000000"));
+                String color=json.optString(TEXT_COLOR,"#000000");
+                if(color.length()==9){
+                    color="#"+color.substring(3);
+                }
+
+                textColor = Color.decode(color);
             }catch(Exception e) {
             }
             diaStyle=json.optInt(STYLE);
@@ -130,5 +142,26 @@ public class Class {
         }
         return json;
     }
+    void makeSujiTaroData(Document document,Element element){
+        Element trainTypeDetail=document.createElement("列車種別詳細");
+        trainTypeDetail.appendChild(createDom(document,"列車種別名",name));
+        trainTypeDetail.appendChild(createDom(document,"描画色",textColor.getAlpha()+"-"+textColor.getRed()+"-"+textColor.getGreen()+"-"+textColor.getBlue()));
+        if(diaBold) {
+            trainTypeDetail.appendChild(createDom(document, "線種","2"));
+        }else{
+            trainTypeDetail.appendChild(createDom(document, "線種","1"));
+
+        }
+        trainTypeDetail.appendChild(createDom(document,"停車通過","0"));
+        element.appendChild(trainTypeDetail);
+
+    }
+    Element createDom(Document document,String tagName,String content){
+        Element result=document.createElement(tagName);
+        result.setTextContent(content);
+        return result;
+
+    }
+
 
 }

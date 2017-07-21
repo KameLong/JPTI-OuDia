@@ -1,6 +1,8 @@
 package kamelong.com.JPTI.JPTI;
 
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.OptionalInt;
@@ -14,19 +16,19 @@ public class RouteStation {
     /**
      * 対応する駅ID
      */
-    private int stationID=-1;
+    int stationID=-1;
     /**
      * 路線キロ程
      */
-    private double km=-1;
+    double km=-1;
     /**
      * 駅ナンバリング
      */
-    private int numbering=-1;
+    int numbering=-1;
     /**
      * 主要駅かどうか
      */
-    private boolean bigStation=false;
+    boolean bigStation=false;
     /**
      2桁の数字文字列で表す
      10の位：上り
@@ -36,7 +38,7 @@ public class RouteStation {
      1：発着
      2：着のみ
      */
-    private String viewStyle=null;
+    int viewStyle=0;
     /**
      * 境界線を持つかどうか
      */
@@ -94,7 +96,7 @@ public class RouteStation {
                 viewStyleInt+=1;
                 break;
         }
-        viewStyle=String.format("%02d",viewStyleInt);
+        viewStyle=viewStyleInt;
     }
     public RouteStation(JSONObject json){
         try {
@@ -103,10 +105,10 @@ public class RouteStation {
             }catch(Exception e){
                 e.printStackTrace();
             }
-            km=json.optDouble(KM);
+            km=json.optDouble(KM,-1);
             numbering=json.optInt(NUMBERING);
             bigStation=json.optInt(TYPE)==1;
-            viewStyle=json.optString(VIEWSTYLE);
+            viewStyle=json.optInt(VIEWSTYLE);
             border=json.optInt(BORDER)==1;
 
         }catch(Exception e){
@@ -131,8 +133,8 @@ public class RouteStation {
             }else{
                 json.put(TYPE,0);
             }
-            if(viewStyle!=null){
-                json.put(VIEWSTYLE,viewStyle);
+            if(viewStyle>-1){
+                json.put(VIEWSTYLE,String.format("%02d",viewStyle));
             }
             if(border){
                 json.put(BORDER,1);
@@ -143,6 +145,25 @@ public class RouteStation {
             e.printStackTrace();
         }
         return json;
+    }
+    Element makeSujiTaroData(Document document,String stationName){
+        Element element=document.createElement("駅明細");
+        element.appendChild(createDom(document,"駅名",stationName));
+        if(km<0){
+            element.appendChild(createDom(document,"距離","0"));
+        }else{
+            element.appendChild(createDom(document,"距離",km+""));
+        }
+        if(viewStyle==0){
+            element.appendChild(createDom(document,"到着","False"));
+        }else{
+            element.appendChild(createDom(document,"到着","True"));
+        }
+        element.appendChild(createDom(document,"出発","True"));
+
+        element.appendChild(createDom(document,"線種",bigStation ? "2" : "0"));
+        element.appendChild(createDom(document,"駅種別","0"));
+        return element;
     }
 
     /**
@@ -157,5 +178,11 @@ public class RouteStation {
                 .findFirst();
     }
 
+    Element createDom(Document document,String tagName,String content){
+        Element result=document.createElement(tagName);
+        result.setTextContent(content);
+        return result;
+
+    }
 
 }

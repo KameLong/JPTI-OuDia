@@ -8,7 +8,8 @@ import sun.awt.windows.WEmbeddedFrame;
 import java.util.ArrayList;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 /**
  * JTPI形式の駅情報を格納するクラス
  */
