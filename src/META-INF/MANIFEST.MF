@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: kamelong.com.JPTI.OuDia2JPTI
+Main-Class: com.kamelong.JPTIOuDia.OuDia2JPTI
 
