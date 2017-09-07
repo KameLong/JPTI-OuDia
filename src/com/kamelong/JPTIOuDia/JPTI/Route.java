@@ -5,6 +5,7 @@ import com.kamelong.JPTIOuDia.OuDia.OuDiaFile;
 import com.kamelong.JPTIOuDia.OuDia.OuDiaTrain;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
@@ -138,6 +139,28 @@ public class Route extends com.kamelong.JPTI.Route {
             }
         }
         return null;
+    }
+    public void addRouteStation(RouteStation newStation){
+        stationList.add(newStation);
+        setChanged();
+        notifyObservers();
+        clearChanged();
+
+    }
+    public void addRouteStation(int index, RouteStation newStation){
+        stationList.add(index,newStation);
+        setChanged();
+        notifyObservers();
+        clearChanged();
+    }
+    public void removeRouteStation(RouteStation station){
+        stationList.remove(station);
+        setChanged();
+        notifyObservers();
+        clearChanged();
+    }
+    public RouteStation getRouteStation(int index){
+        return (RouteStation) stationList.get(index);
     }
 
 

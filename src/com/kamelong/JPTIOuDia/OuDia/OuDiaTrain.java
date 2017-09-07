@@ -73,6 +73,11 @@ public class OuDiaTrain extends com.kamelong.OuDia.OuDiaTrain {
             }
             setStopType(i,STOP_TYPE_NOSERVICE);
         }
+        for(int i=0;i<tripList.size();i++){
+            if(tripList.get(i)!=null){
+
+            }
+        }
 
 
 

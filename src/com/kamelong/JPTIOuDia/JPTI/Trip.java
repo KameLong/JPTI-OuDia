@@ -68,4 +68,10 @@ public class Trip extends com.kamelong.JPTI.Trip {
     public TrainType getType(){
         return (TrainType) traihType;
     }
+    public String getName(){
+        return name;
+    }
+    public String getNumber(){
+        return number;
+    }
 }

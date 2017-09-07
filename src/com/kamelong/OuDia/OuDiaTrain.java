@@ -111,10 +111,11 @@ public class OuDiaTrain {
         if(getStopType(stationIndex)==0){
             return "";
         }
-        String result=""+getStopType(stationIndex)+";";
+        String result=""+getStopType(stationIndex);
         if(!timeExist(stationIndex)){
             return result;
         }
+        result+=";";
         if(arriveExist(stationIndex)){
             result+=timeInt2String(getArriveTime(stationIndex))+"/";
         }

@@ -229,31 +229,6 @@ public abstract class Route extends Observable {
         return stationList.size()>0;
     }
 
-    public void addRouteStation(RouteStation newStation){
-        stationList.add(newStation);
-        setChanged();
-        notifyObservers();
-        clearChanged();
-
-    }
-    public void addRouteStation(int index, RouteStation newStation){
-        stationList.add(index,newStation);
-        setChanged();
-        notifyObservers();
-        clearChanged();
-    }
-    public void removeRouteStation(RouteStation station){
-        stationList.remove(station);
-        setChanged();
-        notifyObservers();
-        clearChanged();
-    }
-    public RouteStation getRouteStation(int index){
-        return stationList.get(index);
-    }
-    public ArrayList<RouteStation> getRouteStation(){
-        return stationList;
-    }
 
 
 

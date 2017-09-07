@@ -168,6 +168,13 @@ public abstract class JPTIdata {
             e.printStackTrace();
         }
     }
+    public void makeJSONdata(File file){
+        try{
+         this.makeJSONdata(new OutputStreamWriter(new FileOutputStream(file.getPath()),"UTF-8"));
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
     protected abstract Agency newAgency(JSONObject json);
     protected abstract Route newRoute(JSONObject json);
     protected abstract Service newService(JSONObject json);

@@ -63,8 +63,12 @@ public class OuDiaFile extends com.kamelong.OuDia.OuDiaFile{
                             for (int k = 0; k < service.getRouteNum(); k++) {
                                 trips.add(service.getRoute(k, 0).getTripByBlockID(trip.getBlockID(),(direct+service.getRouteDirect(service.getRoute(k, direct)))%2));
                             }
-                            trains.add(new OuDiaTrain(this, service, trips));
-                            trains.get(trains.size()-1).setType(trip.getType());
+                            OuDiaTrain newTrain=new OuDiaTrain(this, service, trips);
+                            newTrain.setType(trip.getType());
+                            newTrain.setName(trip.getName());
+                            newTrain.setNumber(trip.getNumber());
+
+                            trains.add(newTrain);
                             useBlockID.add(trip.getBlockID());
                         }
 
