@@ -8,11 +8,10 @@ import java.util.*
  * This source code is released under GNU GPL ver3.
  */
 
-class Stop(val id:UUID,val station:Station) {
+class Calendar(val id: UUID){
     /**
-     * 番線名
+     * ダイヤ名に相当
      */
     var name:String=""
-
 
 }
