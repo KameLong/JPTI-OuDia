@@ -1,5 +1,6 @@
 package com.kamelong.JPTI
 
+import java.sql.Connection
 import java.util.*
 /*
  * Copyright (c) 2019 KameLong
@@ -31,6 +32,29 @@ class Station(val id: UUID){
         newStop.name=stopName
         stops.put(newStop.id,newStop)
         return newStop
+    }
+
+    fun saveToSQL(conn: Connection){
+        val deleteSQL="delete from station where id=?"
+        val insertSQL="insert into station (id,station_name) values(?,?)"
+        try {
+            val ps=conn.prepareStatement(deleteSQL)
+            ps.setString(1, id.toString())
+            ps.executeUpdate()
+        } catch (e: Exception) {
+            throw e
+        }
+        try {
+            val ps=conn.prepareStatement(insertSQL)
+            ps.setString(1, id.toString())
+            ps.setString(2, name)
+            ps.executeUpdate()
+        } catch (e: Exception) {
+            throw e
+        }
+        for(stop in stops.values){
+            stop.saveToSQL(conn)
+        }
     }
 
 }

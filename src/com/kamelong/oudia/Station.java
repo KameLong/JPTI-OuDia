@@ -467,7 +467,11 @@ public class Station implements Cloneable{
     }
 
     public String getTrackName(int trackIndex) {
-        return tracks.get(trackIndex).trackName;
+        try {
+            return tracks.get(trackIndex).trackName;
+        }catch (Exception e){
+            return "番線名なし";
+        }
     }
 
     public String getTrackShortName(int trackIndex) {

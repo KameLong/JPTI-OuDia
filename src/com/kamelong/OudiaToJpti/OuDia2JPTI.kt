@@ -4,25 +4,25 @@ import com.kamelong.JPTI.*
 import com.kamelong.oudia.LineFile
 import com.kamelong.oudia.StationTime
 import com.kamelong.oudia.Train
-import com.sun.jdi.connect.Connector
 import java.io.File
 import java.util.UUID
 import kotlin.collections.ArrayList
 
 
 fun main(args : Array<String>) {
-    val oudiaFile:String=""
+    val oudiaFile:String="sample.oud"
     val lineFile=LineFile(File(oudiaFile))
     val jpti=JPTI()
-    if(jpti.agency.size==0){
+    if(jpti.agencies.size==0){
         val agency=Agency(UUID.randomUUID())
         agency.name="新規会社"
-        jpti.agency.put(agency.id,agency)
+        jpti.agencies.put(agency.id,agency)
     }
     val converter=OuDia2JPTI(jpti,lineFile)
-    val service=converter.makeService(    jpti.agency.values.first())
+    val service=converter.makeService(    jpti.agencies.values.first())
     converter.convertToJPTI(service.id)
     println(jpti)
+    jpti.saveAsNewSQLiteFile("output.sqlite3")
 }
 
 
@@ -42,12 +42,12 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
         for(station in oudia.station){
             val jptiStation=Station(UUID.randomUUID())
             jptiStation.name=station.name
-            jpti.station.put(jptiStation.id,jptiStation)
+            jpti.stations.put(jptiStation.id,jptiStation)
             route.addStation(jptiStation)
         }
-        service.addRoute(route.stationList.values.first(),route.stationList.values.last())
-        agency.route.put(route.id,route)
-        jpti.service.put(service.id,service)
+        service.addRoute(route.stationList.first(),route.stationList.last())
+        agency.routes.put(route.id,route)
+        jpti.services.put(service.id,service)
         return service
     }
 
@@ -56,7 +56,7 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
      */
     fun convertToJPTI(serviceID: UUID){
 
-        val service=jpti.service.get(serviceID)?:return//returnはserviceがnullであるとき
+        val service=jpti.services.get(serviceID)?:return//returnはserviceがnullであるとき
         //駅数チェック
         if(!checkStation(service)) {
             //両者の駅が異なります
@@ -66,11 +66,13 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
         //これが使用するカレンダー(Diagram順に並んでいる)
         val calendarList=makeCalenderList()
         //列車種別をJPTIに追加
+        val tripClassList= arrayListOf<TripClass>()
         for(trainType in oudia.trainType){
             val tripClass=TripClass(UUID.randomUUID(),service)
             tripClass.name=trainType.name
             tripClass.color=trainType.textColor.htmlColor
-            service.tripClass.put(tripClass.id,tripClass)
+            service.tripClasses.put(tripClass.id,tripClass)
+            tripClassList.add(tripClass)
         }
         val stationList=getStationList(service)
         for(diagram in oudia.diagram.zip(calendarList)){
@@ -79,22 +81,22 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
 
             //Tripリストを作成する
             for(train in diagram.first.trains[0]){
-                val trip=Trip(UUID.randomUUID(),service,diagram.second)
+                val trip=Trip(UUID.randomUUID(),service,diagram.second,tripClassList[train.type])
 
                 makeTrip(trip,train,stationList)
-                service.trip.put(trip.id,trip)
+                service.trips.put(trip.id,trip)
             }
             for(train in diagram.first.trains[1]){
-                val trip=Trip(UUID.randomUUID(),service,diagram.second)
+                val trip=Trip(UUID.randomUUID(),service,diagram.second,tripClassList[train.type])
                 makeTrip(trip,train,stationList)
-                service.trip.put(trip.id,trip)
+                service.trips.put(trip.id,trip)
             }
         }
     }
     fun makeCalenderList():ArrayList<Calendar>{
         var result= arrayListOf<Calendar>()
         diagramLoop@ for(diagram in oudia.diagram){
-            for(calendar in jpti.calender.values){
+            for(calendar in jpti.calenders.values){
                 if(calendar.name==diagram.name){
                     result.add(calendar)
                     continue@diagramLoop
@@ -103,12 +105,15 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
             //ダイヤ名と同名のCalendarがないので追加する
             val newCalendar=Calendar(UUID.randomUUID())
             newCalendar.name=diagram.name
-            jpti.calender.put(newCalendar.id,newCalendar)
+            jpti.calenders.put(newCalendar.id,newCalendar)
             result.add(newCalendar)
         }
         return result
     }
     fun makeTrip(trip:Trip,train: Train,stationList:ArrayList<Station>){
+        trip.tripNo=train.number
+        trip.name=train.name
+
         var stationSet=oudia.station.zip(stationList)
 
         var stationTimes=train.stationTimes.zip(stationSet)
@@ -137,7 +142,7 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
     }
     fun getStationList(service:Service):ArrayList<Station>{
         val result= arrayListOf<Station>()
-        for(route:Service.ServiceRoute in service.routeList.values){
+        for(route:Service.ServiceRoute in service.routeList){
             if(result.size>0){
                 result.remove(result.last())
             }
@@ -155,7 +160,7 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
     fun checkStation(service:Service):Boolean{
         var oudStationIndex=0
 
-        for(route:Service.ServiceRoute in service.routeList.values){
+        for(route:Service.ServiceRoute in service.routeList){
             for(station: Station in route.start.route.getStationList(route.start,route.end)){
                 if(oudia.stationNum<=oudStationIndex){
                     //JPTIの方が駅数が多い

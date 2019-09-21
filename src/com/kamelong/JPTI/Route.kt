@@ -1,5 +1,6 @@
 package com.kamelong.JPTI
 
+import java.sql.Connection
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -21,7 +22,7 @@ class Route(val id: UUID,val agency:Agency){
      * 駅順
      * UUIDはRouteStationのID
      */
-    var stationList= linkedMapOf<UUID,RouteStation>()
+    var stationList= arrayListOf<RouteStation>()
 
     /**
      * 列車
@@ -33,7 +34,7 @@ class Route(val id: UUID,val agency:Agency){
      */
     fun addStation(station:Station){
         val routeStation=RouteStation(UUID.randomUUID(),this,station)
-        stationList.put(routeStation.id,routeStation)
+        stationList.add(routeStation)
     }
 
 
@@ -46,12 +47,12 @@ class Route(val id: UUID,val agency:Agency){
             return arrayListOf(start.station)
         }
         //startかendがこのrouteに含まれていない時
-        if(!(stationList.values.contains(start)&&stationList.values.contains(end))){
+        if(!(stationList.contains(start)&&stationList.contains(end))){
             return arrayListOf()
         }
         var result= arrayListOf<Station>()
         var enable=false
-        for(routeStation in stationList.values){
+        for(routeStation in stationList){
             if(routeStation==start||routeStation==end){
                 if(enable){
                     result.add(routeStation.station)
@@ -64,6 +65,49 @@ class Route(val id: UUID,val agency:Agency){
             }
         }
         return result
+    }
+
+    fun saveToSQL(conn: Connection){
+        val deleteSQL="delete from route where id=?"
+        val insertSQL="insert into route (id,route_name) values(?,?)"
+        try {
+            val ps=conn.prepareStatement(deleteSQL)
+            ps.setString(1, id.toString())
+            ps.executeUpdate()
+        } catch (e: Exception) {
+            throw e
+        }
+        try {
+            val ps=conn.prepareStatement(insertSQL)
+            ps.setString(1, id.toString())
+            ps.setString(2, name)
+            ps.executeUpdate()
+        } catch (e: Exception) {
+            throw e
+        }
+        var stationSeq=0
+        for(routeStation in stationList){
+            stationSeq++
+            val deleteStationSQL="delete from routeStation where id=?"
+            val insertStationSQL="insert into routeStation (id,route_id,station_id,station_sequence) values(?,?,?,?)"
+            try {
+                val ps=conn.prepareStatement(deleteStationSQL)
+                ps.setString(1, routeStation.id.toString())
+                ps.executeUpdate()
+            } catch (e: Exception) {
+                throw e
+            }
+            try {
+                val ps=conn.prepareStatement(insertStationSQL)
+                ps.setString(1, routeStation.id.toString())
+                ps.setString(2, routeStation.route.id.toString())
+                ps.setString(3, routeStation.station.id.toString())
+                ps.setInt(4, stationSeq)
+                ps.executeUpdate()
+            } catch (e: Exception) {
+                throw e
+            }
+        }
     }
 
 }
