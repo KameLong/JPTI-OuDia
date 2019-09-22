@@ -17,9 +17,13 @@ class Trip(val id:UUID,val service: Service,val calendar: Calendar,var tripClass
         service.jpti.calenders.get(UUID.fromString(rs.getString("calender_id")))?:throw Exception("Calendar not found"),
         service.tripClasses.get(UUID.fromString(rs.getString("trip_class_id")))?:throw Exception("tripClass not found"))
     {
+        direction=when(rs.getInt("trip_direction_id")){
+            0->Direction.DOWN
+            1->Direction.UP
+            else->Direction.DOWN
+        }
         name=rs.getString("trip_name")
         tripNo=rs.getString("trip_No")
-        direction.value=rs.getInt("trip_direction_id")
     }
 
 
@@ -38,7 +42,7 @@ class Trip(val id:UUID,val service: Service,val calendar: Calendar,var tripClass
     enum class Direction(var value:Int){
         DOWN(0),UP(1)
     }
-    val direction:Direction=Direction.DOWN
+    var direction:Direction=Direction.DOWN
 
     val jpti:JPTI
     get()=service.jpti

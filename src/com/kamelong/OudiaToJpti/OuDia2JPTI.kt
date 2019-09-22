@@ -10,19 +10,19 @@ import kotlin.collections.ArrayList
 
 
 fun main(args : Array<String>) {
-//    val oudiaFile:String="sample.oud"
-//    val lineFile=LineFile(File(oudiaFile))
-//    val jpti=JPTI()
-//    if(jpti.agencies.size==0){
-//        val agency=Agency(UUID.randomUUID(),jpti)
-//        agency.name="新規会社"
-//        jpti.agencies.put(agency.id,agency)
-//    }
-//    val converter=OuDia2JPTI(jpti,lineFile)
-//    val service=converter.makeService(    jpti.agencies.values.first())
-//    converter.convertToJPTI(service.id)
-//    println(jpti)
-//    jpti.saveAsNewSQLiteFile("output.sqlite3")
+    val oudiaFile:String="sample.oud"
+    val lineFile=LineFile(File(oudiaFile))
+    val jpti=JPTI()
+    if(jpti.agencies.size==0){
+        val agency=Agency(UUID.randomUUID(),jpti)
+        agency.name="新規会社"
+        jpti.agencies.put(agency.id,agency)
+    }
+    val converter=OuDia2JPTI(jpti,lineFile)
+    val service=converter.makeService(    jpti.agencies.values.first())
+    converter.convertToJPTI(service.id)
+    println(jpti)
+    jpti.saveAsNewSQLiteFile("output.sqlite3")
 
     val jpti2=JPTI()
     jpti2.openSQLite("output.sqlite3")
@@ -78,7 +78,7 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
             service.tripClasses.put(tripClass.id,tripClass)
             tripClassList.add(tripClass)
         }
-        val stationList=getStationList(service)
+        val stationList=service.getStationList()
         for(diagram in oudia.diagram.zip(calendarList)){
             //diagram.first=Diagram
             //diagram.second=Calendar
@@ -123,6 +123,7 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
         var stationTimes=train.stationTimes.zip(stationSet)
         if(train.direction==Train.UP) {
             stationTimes=stationTimes.reversed()
+            trip.direction=Trip.Direction.UP
         }
         for(stationTimeSet in stationTimes){
             //stationTimeSet.first=StationTime

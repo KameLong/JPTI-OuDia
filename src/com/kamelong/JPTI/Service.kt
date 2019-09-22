@@ -47,7 +47,7 @@ class Service(val id:UUID,val jpti:JPTI) {
             val routeStation= ServiceRoute(
                 UUID.fromString(rs.getString("id")),
                 route.getRouteStation(UUID.fromString(rs.getString("start_route_station_id"))),
-                route.getRouteStation(UUID.fromString(rs.getString("start_route_station_id")))
+                route.getRouteStation(UUID.fromString(rs.getString("end_route_station_id")))
             )
                 routeList.add(routeStation)
         }

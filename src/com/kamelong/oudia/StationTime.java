@@ -271,6 +271,8 @@ public class StationTime implements Cloneable{
     public void setDepTime(int time) {
         if (time < 0) {
             depTime = -1;
+            return;
+
         }
         if (time < 3 * 3600) {
             time += 24 * 3600;
@@ -288,6 +290,7 @@ public class StationTime implements Cloneable{
     public void setAriTime(int time) {
         if (time < 0) {
             ariTime = -1;
+            return;
         }
         if (time < 3 * 3600) {
             time += 24 * 3600;

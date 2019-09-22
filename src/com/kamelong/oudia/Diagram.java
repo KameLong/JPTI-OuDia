@@ -185,6 +185,7 @@ public class Diagram implements Cloneable{
      */
     public void addTrain(int direction,int index,Train train){
         if(train.getStationNum()!= lineFile.getStationNum()){
+            new Exception("列車の駅数とダイヤの駅数が合いません").printStackTrace();
             SDlog.log("列車の駅数とダイヤの駅数が合いません");
             return;
         }
