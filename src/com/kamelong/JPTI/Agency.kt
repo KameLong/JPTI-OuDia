@@ -5,6 +5,7 @@ import java.sql.PreparedStatement
 import java.util.*
 import com.kamelong.JPTI.JPTI
 import com.kamelong.JPTI.Route
+import java.sql.ResultSet
 
 
 /*
@@ -14,7 +15,7 @@ import com.kamelong.JPTI.Route
  * This source code is released under GNU GPL ver3.
  */
 
-class Agency(val id: UUID){
+class Agency(val id: UUID,val jpti:JPTI){
     /**
      * 法人名
      */
@@ -25,6 +26,21 @@ class Agency(val id: UUID){
      */
     var routes= hashMapOf<UUID,Route>()
 
+
+    /**
+     * SQLのresultsetから作る
+     */
+    constructor(rs: ResultSet,jpti:JPTI) :
+            this(UUID.fromString(rs.getString("id")),jpti) {
+        name=rs.getString("name")
+    }
+
+    /**
+     * SQLのResultSetからRouteを追加
+     */
+    fun addRoute(rs:ResultSet){
+
+    }
 
     fun saveToSQL(conn:Connection){
         val deleteSQL="delete from agency where id=?"

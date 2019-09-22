@@ -1,6 +1,7 @@
 package com.kamelong.JPTI
 
 import java.sql.Connection
+import java.sql.ResultSet
 import java.util.*
 /*
  * Copyright (c) 2019 KameLong
@@ -10,6 +11,10 @@ import java.util.*
  */
 
 class Stop(val id:UUID,val station:Station) {
+    constructor(rs: ResultSet, station:Station):this(UUID.fromString(rs.getString("id")),station){
+        name=rs.getString("name")
+    }
+
     /**
      * 番線名
      */

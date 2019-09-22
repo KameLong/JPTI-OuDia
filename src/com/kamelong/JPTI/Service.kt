@@ -1,6 +1,7 @@
 package com.kamelong.JPTI
 
 import java.sql.Connection
+import java.sql.ResultSet
 import java.util.*
 /*
  * Copyright (c) 2019 KameLong
@@ -9,7 +10,10 @@ import java.util.*
  * This source code is released under GNU GPL ver3.
  */
 
-class Service(val id:UUID) {
+class Service(val id:UUID,val jpti:JPTI) {
+    constructor(rs:ResultSet,jpti:JPTI):this(UUID.fromString(rs.getString("id")),jpti){
+        name=rs.getString("name")
+    }
     /**
      * 系統名
      */

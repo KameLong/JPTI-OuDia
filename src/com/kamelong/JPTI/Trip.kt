@@ -1,6 +1,7 @@
 package com.kamelong.JPTI
 
 import java.sql.Connection
+import java.sql.ResultSet
 import java.util.*
 /*
  * Copyright (c) 2019 KameLong
@@ -10,6 +11,17 @@ import java.util.*
  */
 
 class Trip(val id:UUID,val service: Service,val calendar: Calendar,var tripClass:TripClass) {
+    constructor(rs: ResultSet, service: Service,calendar: Calendar,tripClass:TripClass):this(
+        UUID.fromString(rs.getString("id")),
+        service,
+        jpti.calenders.get(UUID.fromString())
+        ,tripClass){
+        name=rs.getString("name")
+        tripNo=rs.getString("trip_No")
+        direction.value=rs.getInt("direction")
+    }
+
+
     /**
      * 列車名
      */
@@ -22,10 +34,13 @@ class Trip(val id:UUID,val service: Service,val calendar: Calendar,var tripClass
     /**
      * 向き
      */
-    enum class Direction(val value:Int){
+    enum class Direction(var value:Int){
         DOWN(0),UP(1)
     }
     val direction:Direction=Direction.DOWN
+
+    val jpti:JPTI
+    get()=service.jpti
 
 
 

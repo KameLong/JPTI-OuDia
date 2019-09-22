@@ -10,6 +10,8 @@ import java.util.*
  */
 
 class StopTime(val id: UUID,var trip: Trip,var stop:Stop) {
+
+
     companion object{
         /**
          * ariTimeやdepTimeの開始時刻を午前3時にする

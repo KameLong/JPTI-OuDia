@@ -1,6 +1,7 @@
 package com.kamelong.JPTI
 
 import java.sql.Connection
+import java.sql.ResultSet
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -29,6 +30,23 @@ class Route(val id: UUID,val agency:Agency){
      */
     var tripList= hashMapOf<UUID,Trip>()
 
+    val jpti:JPTI
+        get()=agency.jpti
+
+    constructor(rs:ResultSet,agency:Agency):this(UUID.fromString(rs.getString("id")),agency){
+        name=rs.getString("name")
+    }
+
+
+    /**
+     * SQLのRouteStationテーブルのデータから追加する
+     */
+    fun addStation(rs:ResultSet){
+        val routeStation=RouteStation(
+            UUID.fromString(rs.getString("id")),
+            this,
+            jpti.getStation(UUID.fromString(rs.getString("station_id"))))
+    }
     /**
      * routeに駅を追加する
      */

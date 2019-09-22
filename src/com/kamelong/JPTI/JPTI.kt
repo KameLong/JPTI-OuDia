@@ -7,8 +7,6 @@ import java.sql.Connection
 import java.sql.SQLException
 import java.sql.DriverManager
 import java.sql.Statement
-
-
 /*
  * Copyright (c) 2019 KameLong
  * contact:kamelong.com
@@ -33,8 +31,65 @@ class JPTI() {
      */
     var stations= hashMapOf<UUID,Station>()
 
+    /**
+     * SQLiteファイルを開く
+     */
+    fun openSQLite(filePath:String){
 
-    fun upDateSQlite(filePath:String){
+        var conn: Connection? = null
+        var stmt: Statement? = null
+        try {
+            // db parameters
+            val url = "jdbc:sqlite:"+filePath
+            // create a connection to the database
+            conn = DriverManager.getConnection(url)
+            conn.autoCommit=false
+            println("Connection to SQLite has been established.")
+
+            val agencySQL = "SELECT * FROM agency"
+            stmt = conn.createStatement();
+            val rs = stmt.executeQuery(agencySQL)
+            while (rs.next()) {
+                val agency=Agency(rs,this)
+                agencies.put(agency.id,agency)
+            }
+
+            for(agency in agencies.values){
+                agency.saveToSQL(conn)
+            }
+            for(calendar in calenders.values){
+                calendar.saveToSQL(conn)
+            }
+            for(station in stations.values){
+                station.saveToSQL(conn)
+            }
+            for(service in services.values){
+                service.saveToSQL(conn)
+            }
+
+            conn.commit()
+            conn.autoCommit=true
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            println(e.message)
+            conn?.rollback()
+        } finally {
+
+            try {
+                conn?.close()
+            } catch (ex: SQLException) {
+                println(ex.message)
+            }
+
+        }
+
+    }
+
+    /**
+     * 既存SQLiteにこのJPTIを上書きします
+     * 同一キーの元データ
+     */
+    fun updateSQLite(filePath:String){
         var conn: Connection? = null
         var stmt: Statement? = null
         try {
@@ -74,6 +129,10 @@ class JPTI() {
         }
 
     }
+
+    /**
+     * 新規SQLiteを作る
+     */
     fun saveAsNewSQLiteFile(filePath:String){
         var conn: Connection? = null
         var stmt: Statement? = null
@@ -141,10 +200,13 @@ class JPTI() {
             }
 
         }
-        upDateSQlite(filePath)
+        updateSQLite(filePath)
 
     }
 
+    /**
+     * 新規SQLにtableを準備する
+     */
     fun createTableSQL(tableName:String,columns:ArrayList<Pair<String,String>>):String{
         var result="Create table $tableName ("
         val first=columns.first()
@@ -154,6 +216,10 @@ class JPTI() {
         }
         result+=")"
         return result
+    }
+
+    fun getStation(stationID:UUID):Station{
+        return stations.get(stationID)?:Station(stationID)
     }
 
 }
