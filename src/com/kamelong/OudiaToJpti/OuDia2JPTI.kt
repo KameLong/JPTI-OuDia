@@ -10,19 +10,23 @@ import kotlin.collections.ArrayList
 
 
 fun main(args : Array<String>) {
-    val oudiaFile:String="sample.oud"
-    val lineFile=LineFile(File(oudiaFile))
-    val jpti=JPTI()
-    if(jpti.agencies.size==0){
-        val agency=Agency(UUID.randomUUID())
-        agency.name="新規会社"
-        jpti.agencies.put(agency.id,agency)
-    }
-    val converter=OuDia2JPTI(jpti,lineFile)
-    val service=converter.makeService(    jpti.agencies.values.first())
-    converter.convertToJPTI(service.id)
-    println(jpti)
-    jpti.saveAsNewSQLiteFile("output.sqlite3")
+//    val oudiaFile:String="sample.oud"
+//    val lineFile=LineFile(File(oudiaFile))
+//    val jpti=JPTI()
+//    if(jpti.agencies.size==0){
+//        val agency=Agency(UUID.randomUUID(),jpti)
+//        agency.name="新規会社"
+//        jpti.agencies.put(agency.id,agency)
+//    }
+//    val converter=OuDia2JPTI(jpti,lineFile)
+//    val service=converter.makeService(    jpti.agencies.values.first())
+//    converter.convertToJPTI(service.id)
+//    println(jpti)
+//    jpti.saveAsNewSQLiteFile("output.sqlite3")
+
+    val jpti2=JPTI()
+    jpti2.openSQLite("output.sqlite3")
+    print(jpti2)
 }
 
 
@@ -37,10 +41,10 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
     //駅から路線から全部作ります
     fun makeService(agency: Agency):Service{
         val route=Route(UUID.randomUUID(),agency)
-        val service=Service(UUID.randomUUID())
+        val service=Service(UUID.randomUUID(),jpti)
 
         for(station in oudia.station){
-            val jptiStation=Station(UUID.randomUUID())
+            val jptiStation=Station(UUID.randomUUID(),jpti)
             jptiStation.name=station.name
             jpti.stations.put(jptiStation.id,jptiStation)
             route.addStation(jptiStation)
@@ -103,7 +107,7 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
                 }
             }
             //ダイヤ名と同名のCalendarがないので追加する
-            val newCalendar=Calendar(UUID.randomUUID())
+            val newCalendar=Calendar(UUID.randomUUID(),jpti)
             newCalendar.name=diagram.name
             jpti.calenders.put(newCalendar.id,newCalendar)
             result.add(newCalendar)
@@ -131,26 +135,14 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
                 stopTime.ariTime=stationTimeSet.first.ariTime
                 stopTime.depTime=stationTimeSet.first.depTime
                 if(stationTimeSet.first.stopType==StationTime.STOP_TYPE_STOP) {
-                    stopTime.stopType = StopTime.StopType.stop
+                    stopTime.stopType = StopTime.StopType.STOP
                 }else{
-                    stopTime.stopType = StopTime.StopType.pass
+                    stopTime.stopType = StopTime.StopType.PASS
                 }
                 trip.stopList.add(stopTime)
                 continue
             }
         }
-    }
-    fun getStationList(service:Service):ArrayList<Station>{
-        val result= arrayListOf<Station>()
-        for(route:Service.ServiceRoute in service.routeList){
-            if(result.size>0){
-                result.remove(result.last())
-            }
-            for(station: Station in route.start.route.getStationList(route.start,route.end)){
-                result.add(station)
-            }
-        }
-        return result
     }
 
     /**

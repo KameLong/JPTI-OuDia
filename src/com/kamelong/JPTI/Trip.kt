@@ -11,14 +11,15 @@ import java.util.*
  */
 
 class Trip(val id:UUID,val service: Service,val calendar: Calendar,var tripClass:TripClass) {
-    constructor(rs: ResultSet, service: Service,calendar: Calendar,tripClass:TripClass):this(
+    constructor(rs: ResultSet, service: Service):this(
         UUID.fromString(rs.getString("id")),
         service,
-        jpti.calenders.get(UUID.fromString())
-        ,tripClass){
-        name=rs.getString("name")
+        service.jpti.calenders.get(UUID.fromString(rs.getString("calender_id")))?:throw Exception("Calendar not found"),
+        service.tripClasses.get(UUID.fromString(rs.getString("trip_class_id")))?:throw Exception("tripClass not found"))
+    {
+        name=rs.getString("trip_name")
         tripNo=rs.getString("trip_No")
-        direction.value=rs.getInt("direction")
+        direction.value=rs.getInt("trip_direction_id")
     }
 
 
@@ -80,6 +81,19 @@ class Trip(val id:UUID,val service: Service,val calendar: Calendar,var tripClass
         for(time in stopList){
             timeIndex++
             time.saveToSQL(conn,timeIndex)
+        }
+    }
+
+    /**
+     * timeを追加する
+     */
+    fun addStopTime(conn: Connection){
+        val sql = "SELECT * FROM time where trip_id=\"${id.toString()}\"order by stop_sequence"
+        val stmt = conn.createStatement()
+        val rs = stmt.executeQuery(sql)
+        while (rs.next()) {
+            val stop=StopTime(rs,this)
+            stopList.add(stop)
         }
     }
 

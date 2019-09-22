@@ -4,7 +4,7 @@ import java.sql.Connection
 import java.sql.ResultSet
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+
 /*
  * Copyright (c) 2019 KameLong
  * contact:kamelong.com
@@ -13,6 +13,10 @@ import kotlin.collections.HashMap
  */
 
 class Route(val id: UUID,val agency:Agency){
+    constructor(rs:ResultSet,agency:Agency):this(UUID.fromString(rs.getString("id")),agency){
+        name=rs.getString("route_name")
+    }
+
     /**
      * 名前
      */
@@ -33,19 +37,20 @@ class Route(val id: UUID,val agency:Agency){
     val jpti:JPTI
         get()=agency.jpti
 
-    constructor(rs:ResultSet,agency:Agency):this(UUID.fromString(rs.getString("id")),agency){
-        name=rs.getString("name")
-    }
 
 
     /**
      * SQLのRouteStationテーブルのデータから追加する
+     * 先にJPTIにStationを用意しておくこと
      */
-    fun addStation(rs:ResultSet){
-        val routeStation=RouteStation(
-            UUID.fromString(rs.getString("id")),
-            this,
-            jpti.getStation(UUID.fromString(rs.getString("station_id"))))
+    fun addStation(conn: Connection){
+        val sql = "SELECT * FROM routeStation where route_id=\"${id.toString()}\" order by station_sequence"
+        val stmt = conn.createStatement()
+        val rs = stmt.executeQuery(sql)
+        while (rs.next()) {
+            val routeStation=RouteStation(UUID.fromString(rs.getString("id")),this,jpti.getStation(UUID.fromString(rs.getString("station_id"))))
+            stationList.add(routeStation)
+        }
     }
     /**
      * routeに駅を追加する
@@ -87,7 +92,7 @@ class Route(val id: UUID,val agency:Agency){
 
     fun saveToSQL(conn: Connection){
         val deleteSQL="delete from route where id=?"
-        val insertSQL="insert into route (id,route_name) values(?,?)"
+        val insertSQL="insert into route (id,agency_id,route_name) values(?,?,?)"
         try {
             val ps=conn.prepareStatement(deleteSQL)
             ps.setString(1, id.toString())
@@ -98,7 +103,8 @@ class Route(val id: UUID,val agency:Agency){
         try {
             val ps=conn.prepareStatement(insertSQL)
             ps.setString(1, id.toString())
-            ps.setString(2, name)
+            ps.setString(2, agency.id.toString())
+            ps.setString(3, name)
             ps.executeUpdate()
         } catch (e: Exception) {
             throw e
@@ -126,6 +132,18 @@ class Route(val id: UUID,val agency:Agency){
                 throw e
             }
         }
+    }
+
+    /**
+     * UUIDからrouteStationを探索
+     */
+    fun getRouteStation(routeStationID:UUID):RouteStation{
+        for(routeStation in stationList){
+            if(routeStation.id==routeStationID){
+                return routeStation
+            }
+        }
+        throw Exception("routeStation not found")
     }
 
 }

@@ -46,27 +46,40 @@ class JPTI() {
             conn.autoCommit=false
             println("Connection to SQLite has been established.")
 
+            val stationSQL="SELECT * from station"
+            stmt = conn.createStatement();
+            val stationRS = stmt.executeQuery(stationSQL)
+            while (stationRS.next()) {
+                val station=Station(stationRS,this)
+                station.addStop(conn)
+                stations.put(station.id,station)
+            }
+
+            val calendarSQL="SELECT * from calendar"
+            stmt = conn.createStatement();
+            val calendarRS = stmt.executeQuery(calendarSQL)
+            while (calendarRS.next()) {
+                val calendar=Calendar(calendarRS,this)
+                calenders.put(calendar.id,calendar)
+            }
             val agencySQL = "SELECT * FROM agency"
             stmt = conn.createStatement();
-            val rs = stmt.executeQuery(agencySQL)
-            while (rs.next()) {
-                val agency=Agency(rs,this)
+            val agencyRS = stmt.executeQuery(agencySQL)
+            while (agencyRS.next()) {
+                val agency=Agency(agencyRS,this)
+                agency.addRoute(conn)
                 agencies.put(agency.id,agency)
             }
-
-            for(agency in agencies.values){
-                agency.saveToSQL(conn)
+            val serviceSQL = "SELECT * FROM service"
+            stmt = conn.createStatement();
+            val serviceRS = stmt.executeQuery(serviceSQL)
+            while (serviceRS.next()) {
+                val service=Service(serviceRS,this)
+                service.addRoute(conn)
+                service.addTripClass(conn)
+                service.addTrip(conn)
+                services.put(service.id,service)
             }
-            for(calendar in calenders.values){
-                calendar.saveToSQL(conn)
-            }
-            for(station in stations.values){
-                station.saveToSQL(conn)
-            }
-            for(service in services.values){
-                service.saveToSQL(conn)
-            }
-
             conn.commit()
             conn.autoCommit=true
         } catch (e: SQLException) {
@@ -149,7 +162,7 @@ class JPTI() {
             println("Connection to SQLite has been established.")
 
             val createAgency=createTableSQL("agency", arrayListOf(
-                Pair("id","text"),Pair("name","text")))
+                Pair("id","text"),Pair("agency_name","text")))
             val createService=createTableSQL("service", arrayListOf(
                 Pair("id","text"),Pair("service_name","text")))
             val createRoute=createTableSQL("route", arrayListOf(
@@ -161,7 +174,7 @@ class JPTI() {
                 Pair("sequence","integer"),Pair("start_route_station_id","text"),Pair("end_route_station_id","text")))
             val createStation=createTableSQL("station", arrayListOf(
                 Pair("id","text"),Pair("station_name","text")))
-            val createStop=createTableSQL("stop", arrayListOf(
+            val createStop=createTableSQL("STOP", arrayListOf(
                 Pair("id","text"),Pair("station_id","text"),Pair("stop_name","text")))
             val createTrip=createTableSQL("trip", arrayListOf(
                 Pair("id","text"),Pair("service_id","text"),Pair("trip_No","text"),
@@ -219,7 +232,23 @@ class JPTI() {
     }
 
     fun getStation(stationID:UUID):Station{
-        return stations.get(stationID)?:Station(stationID)
+        return stations.get(stationID)?:throw Exception("Station is not found")
+    }
+    fun getStop(stopID:UUID):Stop{
+        for(station in stations.values){
+            if(stopID in station.stops){
+                return station.stops.get(stopID)!!
+            }
+        }
+        throw Exception("Stop not found")
+    }
+    fun getRoute(routeID:UUID):Route{
+        for(agency in agencies.values){
+            if(routeID in agency.routes){
+                return agency.routes.get(routeID)!!
+            }
+        }
+        throw Exception("Route not found")
     }
 
 }

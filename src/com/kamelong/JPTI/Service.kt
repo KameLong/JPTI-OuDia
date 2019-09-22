@@ -12,7 +12,7 @@ import java.util.*
 
 class Service(val id:UUID,val jpti:JPTI) {
     constructor(rs:ResultSet,jpti:JPTI):this(UUID.fromString(rs.getString("id")),jpti){
-        name=rs.getString("name")
+        name=rs.getString("service_name")
     }
     /**
      * 系統名
@@ -34,7 +34,47 @@ class Service(val id:UUID,val jpti:JPTI) {
      * 所属列車
      */
     var trips = hashMapOf<UUID, Trip>()
-
+    /**
+     * SQLのRouteStationテーブルのデータから追加する
+     * 先にJPTIにRouteを用意しておくこと
+     */
+    fun addRoute(conn: Connection){
+        val sql = "SELECT * FROM LineSystem where service_id=\"${id.toString()}\"order by sequence"
+        val stmt = conn.createStatement()
+        val rs = stmt.executeQuery(sql)
+        while (rs.next()) {
+            val route:Route=jpti.getRoute(UUID.fromString(rs.getString("route_id")))
+            val routeStation= ServiceRoute(
+                UUID.fromString(rs.getString("id")),
+                route.getRouteStation(UUID.fromString(rs.getString("start_route_station_id"))),
+                route.getRouteStation(UUID.fromString(rs.getString("start_route_station_id")))
+            )
+                routeList.add(routeStation)
+        }
+    }
+    fun addTripClass(conn: Connection){
+        val sql = "SELECT * FROM trip_class where service_id=\"${id.toString()}\""
+        val stmt = conn.createStatement()
+        val rs = stmt.executeQuery(sql)
+        while (rs.next()) {
+            val tripClass=TripClass(rs,this)
+            tripClasses.put(tripClass.id,tripClass)
+        }
+    }
+    /**
+     * SQLのtripテーブルのデータを取得する
+     * 先にStop,TripClassを用意しておくこと
+     */
+    fun addTrip(conn:Connection){
+        val sql = "SELECT * FROM trip where service_id=\"${id.toString()}\""
+        val stmt = conn.createStatement()
+        val rs = stmt.executeQuery(sql)
+        while (rs.next()) {
+            val trip=Trip(rs,this)
+            trip.addStopTime(conn)
+            trips.put(trip.id,trip)
+        }
+    }
 
     /**
      * 所属Routeの追加
@@ -107,4 +147,21 @@ class Service(val id:UUID,val jpti:JPTI) {
             tripClass.saveToSQL(conn)
         }
     }
+
+    /**
+     * Serviceに所属する駅のリスト
+     */
+    fun getStationList():ArrayList<Station>{
+        val result= arrayListOf<Station>()
+        for(route:ServiceRoute in routeList){
+            if(result.size>0){
+                result.remove(result.last())
+            }
+            for(station: Station in route.start.route.getStationList(route.start,route.end)){
+                result.add(station)
+            }
+        }
+        return result
+    }
+
 }

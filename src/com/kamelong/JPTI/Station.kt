@@ -12,7 +12,7 @@ import java.util.*
 
 class Station(val id: UUID,val jpti:JPTI){
     constructor(rs: ResultSet, jpti:JPTI):this(UUID.fromString(rs.getString("id")),jpti){
-        name=rs.getString("name")
+        name=rs.getString("station_name")
     }
 
     /**
@@ -60,6 +60,20 @@ class Station(val id: UUID,val jpti:JPTI){
         for(stop in stops.values){
             stop.saveToSQL(conn)
         }
+    }
+
+    /**
+     * SQLからStopを追加します
+     */
+    fun addStop(conn: Connection){
+        val sql = "SELECT * FROM STOP where station_id =\"${id.toString()}\""
+        val stmt = conn.createStatement()
+        val rs = stmt.executeQuery(sql)
+        while (rs.next()) {
+            val stop=Stop(rs,this)
+            stops.put(stop.id,stop)
+        }
+
     }
 
 }

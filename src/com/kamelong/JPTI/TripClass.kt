@@ -1,6 +1,7 @@
 package com.kamelong.JPTI
 
 import java.sql.Connection
+import java.sql.ResultSet
 import java.util.*
 /*
  * Copyright (c) 2019 KameLong
@@ -10,6 +11,12 @@ import java.util.*
  */
 
 class TripClass(val id:UUID,var service:Service){
+    constructor(rs: ResultSet, service: Service):this(
+        UUID.fromString(rs.getString("id")),service){
+        name=rs.getString("trip_class_name")
+        color=rs.getString("trip_class_color")
+
+    }
 
     /**
      * 種別名

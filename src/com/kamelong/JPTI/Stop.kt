@@ -12,7 +12,7 @@ import java.util.*
 
 class Stop(val id:UUID,val station:Station) {
     constructor(rs: ResultSet, station:Station):this(UUID.fromString(rs.getString("id")),station){
-        name=rs.getString("name")
+        name=rs.getString("stop_name")
     }
 
     /**
@@ -20,8 +20,8 @@ class Stop(val id:UUID,val station:Station) {
      */
     var name:String=""
     fun saveToSQL(conn: Connection) {
-        val deleteSQL = "delete from stop where id=?"
-        val insertSQL = "insert into stop (id,station_id,stop_name) values(?,?,?)"
+        val deleteSQL = "delete from STOP where id=?"
+        val insertSQL = "insert into STOP (id,station_id,stop_name) values(?,?,?)"
         try {
             val ps = conn.prepareStatement(deleteSQL)
             ps.setString(1, id.toString())

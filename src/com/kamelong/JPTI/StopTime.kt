@@ -1,6 +1,7 @@
 package com.kamelong.JPTI
 
 import java.sql.Connection
+import java.sql.ResultSet
 import java.util.*
 /*
  * Copyright (c) 2019 KameLong
@@ -10,6 +11,20 @@ import java.util.*
  */
 
 class StopTime(val id: UUID,var trip: Trip,var stop:Stop) {
+    constructor(rs:ResultSet,trip:Trip):this(
+        UUID.fromString(rs.getString("id")),trip,
+        trip.service.jpti.getStop(UUID.fromString(rs.getString("stop_id")))
+    ){
+        ariTime=rs.getInt("arrival_time")
+        depTime=rs.getInt("departure_time")
+        if(rs.getInt("pickup_type")==0||rs.getInt("dropoff_type")==0){
+            stopType=StopType.STOP
+        }else{
+            stopType=StopType.PASS
+        }
+
+    }
+
 
 
     companion object{
@@ -66,18 +81,19 @@ class StopTime(val id: UUID,var trip: Trip,var stop:Stop) {
     /**
      * 所属駅
      */
-    var station:Station=stop.station
+    val station:Station
+    get()=stop.station
 
     enum class StopType(type:Int){
-        none(0),
-        stop(1),pass(2)
+        NONE(0),
+        STOP(1),PASS(2)
     }
 
     /**
      * 停車タイプ
      * 一時的にpickup_type=dropoff_typeとして処理する
      */
-    var stopType:StopType=StopType.none
+    var stopType:StopType=StopType.NONE
     fun saveToSQL(conn: Connection,seq:Int) {
         val deleteSQL = "delete from time where id=?"
         val insertSQL =
@@ -97,14 +113,14 @@ class StopTime(val id: UUID,var trip: Trip,var stop:Stop) {
             ps.setString(4, stop.id.toString())
             ps.setInt(5, seq)
             ps.setInt(6, when(stopType){
-                StopType.stop->0
-                StopType.none->1
-                StopType.pass->1
+                StopType.STOP->0
+                StopType.NONE->1
+                StopType.PASS->1
             })
             ps.setInt(7, when(stopType){
-                StopType.stop->0
-                StopType.none->1
-                StopType.pass->1
+                StopType.STOP->0
+                StopType.NONE->1
+                StopType.PASS->1
             })
             if(ariTime!=null){
                 ps.setInt(8, ariTime!!)
