@@ -164,4 +164,18 @@ class Service(val id:UUID,val jpti:JPTI) {
         return result
     }
 
+    fun getRouteStationIndex(routeStation: Route.RouteStation):Int{
+        var result=0
+        for(route:ServiceRoute in routeList){
+            for(station in route.start.route.stationList){
+                if(routeStation==station){
+                    return result
+                }
+                result++
+            }
+            result--
+        }
+        throw Exception("routeStation not found")
+    }
+
 }

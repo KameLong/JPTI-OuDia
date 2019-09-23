@@ -250,5 +250,17 @@ class JPTI() {
         }
         throw Exception("Route not found")
     }
+    fun getRouteStation(routeStationID:UUID):Route.RouteStation{
+        for(agency in agencies.values){
+            for(route in agency.routes.values){
+                for(routeStation in route.stationList){
+                    if(routeStation.id==routeStationID){
+                        return routeStation
+                    }
+                }
+            }
+        }
+        throw Exception("Route not found")
+    }
 
 }

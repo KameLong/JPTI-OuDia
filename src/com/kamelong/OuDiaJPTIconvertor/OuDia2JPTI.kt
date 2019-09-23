@@ -1,4 +1,4 @@
-package com.kamelong.OudiaToJpti
+package com.kamelong.OuDiaJPTIconvertor
 
 import com.kamelong.JPTI.*
 import com.kamelong.oudia.LineFile
@@ -10,23 +10,42 @@ import kotlin.collections.ArrayList
 
 
 fun main(args : Array<String>) {
-    val oudiaFile:String="sample.oud"
-    val lineFile=LineFile(File(oudiaFile))
+    test1()
+//    val oudiaFile:String="sample.oud"
+//    val lineFile=LineFile(File(oudiaFile))
+//    val jpti=JPTI()
+//    if(jpti.agencies.size==0){
+//        val agency=Agency(UUID.randomUUID(),jpti)
+//        agency.name="新規会社"
+//        jpti.agencies.put(agency.id,agency)
+//    }
+//    val converter=OuDia2JPTI(jpti,lineFile)
+//    val service=converter.makeService(    jpti.agencies.values.first())
+//    converter.convertToJPTI(service.id)
+//    println(jpti)
+//    jpti.saveAsNewSQLiteFile("output.sqlite3")
+//
+//    val jpti2=JPTI()
+//    jpti2.openSQLite("output.sqlite3")
+//    print(jpti2)
+}
+
+fun test1(){
+    val oudiaFiles= arrayListOf<String>("route1.oud","route2.oud","route3.oud")
     val jpti=JPTI()
     if(jpti.agencies.size==0){
         val agency=Agency(UUID.randomUUID(),jpti)
         agency.name="新規会社"
         jpti.agencies.put(agency.id,agency)
     }
-    val converter=OuDia2JPTI(jpti,lineFile)
-    val service=converter.makeService(    jpti.agencies.values.first())
-    converter.convertToJPTI(service.id)
-    println(jpti)
-    jpti.saveAsNewSQLiteFile("output.sqlite3")
-
-    val jpti2=JPTI()
-    jpti2.openSQLite("output.sqlite3")
-    print(jpti2)
+    for(fileName in oudiaFiles){
+        val lineFile=LineFile(File(fileName))
+        val converter=OuDia2JPTI(jpti,lineFile)
+        val service=converter.makeService(    jpti.agencies.values.first())
+        service.name=lineFile.name
+        converter.convertToJPTI(service.id)
+    }
+    jpti.saveAsNewSQLiteFile("test.sqlite3")
 }
 
 
@@ -42,6 +61,7 @@ class OuDia2JPTI(val jpti: JPTI, val oudia:LineFile){
     fun makeService(agency: Agency):Service{
         val route=Route(UUID.randomUUID(),agency)
         val service=Service(UUID.randomUUID(),jpti)
+
 
         for(station in oudia.station){
             val jptiStation=Station(UUID.randomUUID(),jpti)

@@ -1,4 +1,4 @@
-package com.kamelong.OudiaToJpti
+package com.kamelong.OuDiaJPTIconvertor
 
 import com.kamelong.JPTI.*
 import com.kamelong.JPTI.Station
@@ -7,13 +7,19 @@ import com.kamelong.tool.Color
 import java.util.*
 import kotlin.Exception
 import kotlin.collections.ArrayList
+//output.sqlite3(つくばエクスプレス)
+//をOuDiaにするテスト
 fun main(args:Array<String>){
+    val startTime=System.currentTimeMillis()
     val jpti2=JPTI()
     jpti2.openSQLite("output.sqlite3")
-    print(jpti2)
+    println(System.currentTimeMillis()-startTime)
     val converter=JPTI2OuDia(jpti2)
     converter.makeOuDiaFromService(jpti2.services.keys.first())
+    println(System.currentTimeMillis()-startTime)
     converter.oudia.saveToFile("out.oud2")
+    converter.oudia.saveToOuDiaFile("out.oud")
+    println(System.currentTimeMillis()-startTime)
 
 }
 /**
@@ -61,11 +67,16 @@ class JPTI2OuDia(val jpti: JPTI){
                 }
             }
             oudia.diagram.add(diagram)
+            diagram.sortTrain(0,0)
+            diagram.sortTrain(1,oudia.stationNum-1)
         }
+
     }
+
 
     fun makeStation(oud:com.kamelong.oudia.Station,station:Station):ArrayList<Stop>{
         oud.name=station.name
+        oud.jptiStationID=station.id
         var stopList= arrayListOf<Stop>()
         for(stop in station.stops.values){
             stopList.add(stop)

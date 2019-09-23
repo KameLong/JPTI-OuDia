@@ -1,0 +1,136 @@
+FileType=OuDia.1.02
+Rosen.
+Rosenmei=JR’¼’Ê
+Eki.
+Ekimei=•‘ ¬™
+Ekijikokukeisiki=Jikokukeisiki_NoboriChaku
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=‰H‘ò‰¡•l‘‘å
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=¼’J
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=’ßƒ–•ô
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=“ñ–“ì
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=Šó–]ƒ–‹u
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=Oƒc‹«
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=£’J
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=‘å˜a
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=‘Š–Í‘å’Ë
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=‚³‚ª‚İ–ì
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=‚©‚µ‚í‘ä
+Ekijikokukeisiki=Jikokukeisiki_Hatsu
+Ekikibo=Ekikibo_Ippan
+.
+Eki.
+Ekimei=ŠC˜V–¼
+Ekijikokukeisiki=Jikokukeisiki_KudariChaku
+Ekikibo=Ekikibo_Ippan
+.
+Ressyasyubetsu.
+Syubetsumei=•’Ê
+JikokuhyouMojiColor=00000000
+JikokuhyouFontIndex=0
+DiagramSenColor=00000000
+DiagramSenStyle=SenStyle_Jissen
+StopMarkDrawType=EStopMarkDrawType_DrawOnStop
+.
+Dia.
+DiaName=•½“ú
+Kudari.
+Ressya.
+Houkou=Kudari
+Syubetsu=0
+EkiJikoku=1;1900,1;1935,1;1940,1;1945,1;1950,1;1955,1;2000,1;2005,1;2010,1;2015,1;2020,1;2025,1;2030/
+.
+.
+Nobori.
+Ressya.
+Houkou=Nobori
+Syubetsu=0
+EkiJikoku=1;1930,1;1940,1;1945,1;1950,1;1955,1;2000,1;2005,1;2010,1;2015,1;2020,1;2024,1;2029,1;2059/
+.
+.
+.
+Dia.
+DiaName=“y“ú
+Kudari.
+Ressya.
+Houkou=Kudari
+Syubetsu=0
+EkiJikoku=1;1915,1;1955,1;2000,1;2005,1;2010,1;2015,1;2020,1;2025,1;2030,1;2035,1;2040,1;2045,1;2050/
+.
+.
+Nobori.
+Ressya.
+Houkou=Nobori
+Syubetsu=0
+EkiJikoku=1;1945,1;2000,1;2005,1;2010,1;2015,1;2020,1;2025,1;2030,1;2035,1;2040,1;2042,1;2047,1;2117/
+.
+.
+.
+KitenJikoku=000
+DiagramDgrYZahyouKyoriDefault=60
+Comment=
+.
+DispProp.
+JikokuhyouFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN
+JikokuhyouFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN;Bold=1
+JikokuhyouFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN;Itaric=1
+JikokuhyouFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN;Bold=1;Itaric=1
+JikokuhyouFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN
+JikokuhyouFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN
+JikokuhyouFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN
+JikokuhyouFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN
+JikokuhyouVFont=PointTextHeight=9;Facename=@‚l‚r ƒSƒVƒbƒN
+DiaEkimeiFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN
+DiaJikokuFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN
+DiaRessyaFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN
+CommentFont=PointTextHeight=9;Facename=‚l‚r ƒSƒVƒbƒN
+DiaMojiColor=00000000
+DiaHaikeiColor=00FFFFFF
+DiaRessyaColor=00000000
+DiaJikuColor=00C0C0C0
+EkimeiLength=6
+JikokuhyouRessyaWidth=5
+.
+FileTypeAppComment=OuDia Ver. 1.02.05

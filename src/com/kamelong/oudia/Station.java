@@ -4,6 +4,7 @@ import com.kamelong.tool.SDlog;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.UUID;
 /*
  * Copyright (c) 2019 KameLong
  * contact:kamelong.com
@@ -187,6 +188,9 @@ public class Station implements Cloneable{
      * 通常時刻表で番線を表示するか
      */
     public boolean omitTrack=false;
+
+    //ここからJPTI向け
+    public UUID jptiStationID=UUID.randomUUID();
 
     public Station(LineFile lineFile) {
         this.lineFile = lineFile;
