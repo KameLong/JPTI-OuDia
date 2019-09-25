@@ -635,6 +635,12 @@ public class LineFile implements Cloneable {
         }
     }
 
+    /**
+     * OuDiaファイルで読み込むと番線情報がないため、
+     * oud2として扱うには不都合があります。
+     *
+     * 必要な数の番線を追加する事で解結を図ります
+     */
     public void convertToOud2() {
         for (Station s : station) {
             for (int i = s.tracks.size(); i <= s.stopMain[Train.DOWN] || i <= s.stopMain[Train.UP]; i++) {
@@ -645,8 +651,12 @@ public class LineFile implements Cloneable {
             }
         }
     }
+
+    /**
+     * oudiaのborderをoudia2ndのbruchStationの考えに合わせます。
+     */
     public void checkBorderStation(){
-        //oudiaのborderをoudia2ndに合わせる
+        //
          for(int index=0;index<getStationNum();index++){
              Station station=getStation(index);
              if(station.border){
@@ -662,6 +672,7 @@ public class LineFile implements Cloneable {
              }
          }
          //oudiaSecondのborderをoudiaに合わせる
+        //OuDiaファイルとして出力する時用
         for(int index=0;index<getStationNum();index++){
             Station station=getStation(index);
             if(station.brunchCoreStationIndex>=0){
@@ -729,13 +740,29 @@ public class LineFile implements Cloneable {
         return station.get(index);
     }
 
+    /**
+     * 駅間の最短所要時間
+     * 単位は秒
+     * 起点駅を0秒
+     * そこから各駅までの所要時間の累計を配列の形で格納
+     */
     private ArrayList<Integer>stationTime=new ArrayList<>();
+
+    /**
+     * 最短所要時刻を取得する
+     */
     public ArrayList<Integer>getStationTime(){
         if(stationTime.size()!=station.size()){
+            //駅数の変更があるときは再計算する。
             calcStationTime();
         }
         return stationTime;
     }
+
+    /**
+     * 最短所要時刻を再計算する。
+     * この処理は比較的重いので注意
+     */
     private void calcStationTime(){
         stationTime=new ArrayList<>();
         stationTime.add(0);
@@ -896,6 +923,9 @@ public class LineFile implements Cloneable {
         return true;
     }
 
+    /**
+     * brunch:trueの時追加した駅の列車停タイプが経由なしになる。
+     */
     public void addStation(int index,Station newStation,boolean brunch){
         if(index<0||index>=getStationNum()){
             index=getStationNum();

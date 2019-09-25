@@ -9,6 +9,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 fun main(args:Array<String>){
+    main2()
+    if(true)return
     val startTime=System.currentTimeMillis()
     val jpti=JPTI()
     jpti.openSQLite("test.sqlite3")
@@ -87,7 +89,60 @@ fun main(args:Array<String>){
     val oudia=converter.makeOuDia(stationList,subServiceList)
     oudia.saveToFile("result.oud2")
 }
+fun main2(){
+    val startTime=System.currentTimeMillis()
+    val jpti=JPTI()
+    jpti.openSQLite("test.sqlite3")
+    println(System.currentTimeMillis()-startTime)
+    val converter=JPTI2OuDia2(jpti)
 
+
+    //使用する駅のリスト
+    val stationIDList= arrayListOf<String>(
+        "87c13ac5-38c5-400f-b686-67fec7388620",//武蔵小杉
+        "ab4d54ff-3083-4589-8a85-356c4576431b",
+        "2176e4d8-8ed8-4cae-9c1f-89aa1e1fc1f0",//西谷
+        "5afef5de-0a7f-46e5-ac88-10bffd8d6297",
+        "901eb80c-1818-490c-bcdc-43e3dfdf1461",//二俣川
+        "f0559952-5792-4848-bce8-033e60fa0881",
+        "9eebd60d-bb50-4bd8-bcbd-f27a3998fcd7",
+        "fcab4857-0c62-42a0-82c0-943488410ec7",
+        "deaba447-3e6a-4aab-be38-6da54cb64185",
+        "0229517d-2f17-4799-9cee-ba5b6c5973f6",
+        "8b4311a1-b35f-491c-ad19-5c3fd4ec8838",
+        "7656bbb7-e2e5-4ad5-8f95-297a4d237726"//湘南台
+    )
+    val stationList= arrayListOf<Station>()
+    for(id in stationIDList){
+        stationList.add(jpti.getStation(UUID.fromString(id)))
+    }
+    /**
+    e328de1f-9a83-426f-af3f-34520ae37784|本線
+    75b26902-8705-4510-83a2-67f600e9f78e|いずみ野線
+    1b08360f-2407-4a67-b294-467540e388c7|JR直通
+     */
+    //使用するサービスのリスト
+    val subServiceList= arrayListOf<JPTI2OuDia2.SubService>(
+        JPTI2OuDia2.SubService(
+            jpti.services.get(UUID.fromString("e328de1f-9a83-426f-af3f-34520ae37784"))?:throw Exception("service not found"),
+            jpti.getRouteStation(UUID.fromString("5bb71326-bc54-4b2e-a2f8-22cda707cebc")),//西谷
+            jpti.getRouteStation(UUID.fromString("ad33c65b-6d1f-4a74-8d5c-1008ffb1460b"))),//二俣川
+        JPTI2OuDia2.SubService(
+            jpti.services.get(UUID.fromString("75b26902-8705-4510-83a2-67f600e9f78e"))?:throw Exception("service not found"),
+            jpti.getRouteStation(UUID.fromString("9f21e1a9-584b-47e8-a9cd-7c27af08a17e")),//西谷
+            jpti.getRouteStation(UUID.fromString("d0f769a0-f663-4a74-8898-daf435b57f1d"))),//湘南台
+        JPTI2OuDia2.SubService(
+            jpti.services.get(UUID.fromString("1b08360f-2407-4a67-b294-467540e388c7"))?:throw Exception("service not found"),
+            jpti.getRouteStation(UUID.fromString("b225712e-744a-40d3-952f-05fb6b09306e")),//武蔵小杉
+            jpti.getRouteStation(UUID.fromString("d5f76910-a93f-45ad-8f87-4a2fd5acf9dc")))//二俣川
+    )
+
+
+    println(System.currentTimeMillis()-startTime)
+    val oudia=converter.makeOuDia(stationList,subServiceList)
+    oudia.saveToOuDiaFile("result2.oud")
+
+}
 class JPTI2OuDia2(val jpti:JPTI){
     var oudiaList= arrayListOf<LineFile>()
 

@@ -802,6 +802,9 @@ public class Station implements Cloneable{
 
     }
 
+    /**
+     * 駅順の逆転に伴ってパラメーターを書き換えます。
+     */
     public void reverse(){
         reverse(this.showArrival);
         reverse(this.showArrivalCustom);
